@@ -22,11 +22,12 @@ var transformString = function (s) {
     return s.toLowerCase();
 };
 
+// create the Gulp transformation function with GulpText simple
 var transformation = textTransform(transformString);
 
 gulp.task('default', function() {
     return gulp.src('src/*.txt')
-        .pipe(transformation)
+        .pipe(transformation) // pass the transformation function to Gulp
         .pipe(gulp.dest('out/'));
 });
 ~~~
