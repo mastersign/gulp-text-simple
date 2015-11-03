@@ -15,14 +15,14 @@ With GulpText _simple_ you can just implement a function taking a string an retu
 
 ~~~ js
 var gulp = require('gulp');
-var textTask = require('gulp-text-simple');
+var textTransform = require('gulp-text-simple');
 
 var transformString = function (s) {
     // do whatever you want with the text content of a file
     return s.toLowerCase();
 };
 
-var transformation = textTask(transformString);
+var transformation = textTransform(transformString);
 
 gulp.task('default', function() {
     return gulp.src('src/*.txt')
