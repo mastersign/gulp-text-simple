@@ -1,0 +1,27 @@
+{
+  "name": "gulp-text-simple",
+  "version": "0.1.0",
+  "description": "create string based gulp tasks",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/mastersign/gulp-text-simple.git"
+  },
+  "keywords": [
+    "gulp",
+    "task",
+    "factory"
+  ],
+  "author": "Tobias Kiertscher <dev@mastersign.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mastersign/gulp-text-simple/issues"
+  },
+  "homepage": "https://github.com/mastersign/gulp-text-simple#readme",
+  "dependencies": {
+    "through2": "^2.0.0"
+  }
+}
