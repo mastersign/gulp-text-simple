@@ -133,7 +133,7 @@ describe('gulp-simple-text', function () {
 			it('should pass a buffer file with the result of f', function (done) {
 				var expected = "xyz";
 				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
-				var f = function (text) { return expected; };
+				var f = function () { return expected; };
 
 				var t = tf(f);
 				var gt = t();
@@ -143,6 +143,60 @@ describe('gulp-simple-text', function () {
 					assert(file.isBuffer(), 'did not pass a buffer file object');
 					var result = file.contents.toString('utf-8');
 					assert.equal(result, expected, 'did not pass the result into the buffer');
+					done();
+				});
+			});
+
+			it('should convert a null result from f into an empty file', function (done) {
+				var data = null;
+				var expected = '';
+				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
+				var f = function () { return data; };
+
+				var t = tf(f);
+				var gt = t();
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(file.isBuffer(), 'did not pass a buffer file object');
+					var result = file.contents.toString('utf-8');
+					assert.equal(result, expected, 'did not convert the null result properly');
+					done();
+				});
+			});
+
+			it('should convert an object result from f into a JSON string', function (done) {
+				var data = { a: 1, b: 2 };
+				var expected = JSON.stringify(data, null, '  ');
+				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
+				var f = function () { return data; };
+
+				var t = tf(f);
+				var gt = t();
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(file.isBuffer(), 'did not pass a buffer file object');
+					var result = file.contents.toString('utf-8');
+					assert.equal(result, expected, 'did not convert the Object result properly');
+					done();
+				});
+			});
+
+			it('should convert an Array result from f into a JSON string', function (done) {
+				var data = [1, 2, "a", "b"];
+				var expected = JSON.stringify(data, null, '  ');
+				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
+				var f = function () { return data; };
+
+				var t = tf(f);
+				var gt = t();
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(file.isBuffer(), 'did not pass a buffer file object');
+					var result = file.contents.toString('utf-8');
+					assert.equal(result, expected, 'did not convert the Array result properly');
 					done();
 				});
 			});
