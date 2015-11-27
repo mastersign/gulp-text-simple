@@ -81,6 +81,74 @@ describe('gulp-simple-text', function () {
 
 		});
 
+		describe('in buffer mode', function () {
+			
+			it('should call the transformation function', function (done) {
+				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
+				var called = false;
+				var f = function () { called = true; return "xyz"; };
+
+				var t = tf(f);
+				var gt = t();
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(called, 'did not call transformation function');
+					done();
+				});
+			});
+
+			it('should pass the input to the transformation function', function (done) {
+				var expected = "input text";
+				var result = undefined;
+				var fakeFile = new File({ contents: new Buffer(expected, 'utf-8') });
+				var f = function (text) { result = text; return "xyz"; };
+
+				var t = tf(f);
+				var gt = t();
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert.equal(result, expected, 'did not pass the input text to f');
+					done();
+				});
+			});
+
+			it('should pass the options to the transformation function', function (done) {
+				var expected = { a: 1 };
+				var result = undefined;
+				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
+				var f = function (text, options) { result = options; return "xyz"; };
+
+				var t = tf(f);
+				var gt = t(expected);
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(result === expected, 'did not pass the options to f');
+					done();
+				});
+			});
+
+			it('should pass a buffer file with the result of f', function (done) {
+				var expected = "xyz";
+				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
+				var f = function (text) { return expected; };
+
+				var t = tf(f);
+				var gt = t();
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(file.isBuffer(), 'did not pass a buffer file object');
+					var result = file.contents.toString('utf-8');
+					assert.equal(result, expected, 'did not pass the result into the buffer');
+					done();
+				});
+			});
+
+		});
+
 	});
 
 });
