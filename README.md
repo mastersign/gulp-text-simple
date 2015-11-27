@@ -17,6 +17,7 @@ Features
 * support for buffer file objects
 * support for stream file objects
 * supports passing additional options to the transformation function
+* passing the source path of the vinyl file as option into the transformation function
 * the transformation factory behaves like the transformation function,
   if the first argument is a string
 * automatic JSON conversion of non-string results from the transformation function 
@@ -24,12 +25,16 @@ Features
 Application
 -----------
 
-With GulpText _simple_ you can just implement a function taking a string an returning a string. And it will create a Gulp transformation factory for you, which you can just use with `.pipe()`.
+All examples are based on the following preamble.
 
 ~~~ js
 var gulp = require('gulp');
 var textTransformation = require('gulp-text-simple');
+~~~
 
+With GulpText _simple_ you can just implement a function taking a string an returning a string. And it will create a Gulp transformation factory for you, which you can just use with `.pipe()`.
+
+~~~ js
 var transformString = function (s) {
     // do whatever you want with the text content of a file
     return s.toLowerCase();
@@ -48,9 +53,6 @@ gulp.task('default', function() {
 If you need to pass options, you can use a second argument for that.
 
 ~~~ js
-var gulp = require('gulp');
-var textTransformation = require('gulp-text-simple');
-
 var transformString = function (s, options) {
     // do whatever you want with the text content of a file
     if (options.mode === 'lower') {
@@ -72,13 +74,34 @@ gulp.task('default', function() {
 });
 ~~~
 
+The source path of a file is passed as option `sourcePath` in the second argument.
+If the custom options allready have an attribute `sourcePath` it is _not_ overridden.
+
+~~~ js
+var os = require('os');
+
+var transformString = function (text, options) {
+    // putting the source path as a prefix at the top of the text
+    var prefix = options.prefix; // custom options are preserved
+    var pathOfFile = options.sourcePath; // the sourcePath is merged into the custom options
+    return prefix + pathOfFile + os.EOL + text;
+};
+
+// create the Gulp transformation factory
+var transformation = textTransformation(transformString);
+
+gulp.task('default', function() {
+    return gulp.src('src/*.txt')
+        .pipe(transformation({ prefix: '# ' })) // create the transformation and pass it to Gulp
+        .pipe(gulp.dest('out/'));
+});
+~~~
+
 You can use the factory function like the original transformation function.
 If the first argument passed to the factory is a string, it behaves like the
 transformation function.
 
 ~~~ js
-var textTransformation = require('gulp-text-simple');
-
 var transformString = function (s, options) {
     // do whatever you want with the text content of a file
     return s.toLowerCase();
