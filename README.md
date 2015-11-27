@@ -115,7 +115,7 @@ transformation("ABC"); // -> "abc"
 License
 -------
 
-MIT
+GulpText _simple_ is published under MIT license.
 
 [npm-url]: https://www.npmjs.com/package/gulp-text-simple
 [npm-img]: https://img.shields.io/npm/v/gulp-text-simple.svg
