@@ -1,5 +1,6 @@
 /* globals require, Buffer */
 
+var _ = require('lodash');
 var through = require('through2');
 var stream = require('stream');
 var util = require('util');
@@ -95,6 +96,16 @@ var gulpTransformation = function(f, srcEncoding, trgEncoding) {
             return f(arguments[0], arguments[1]);
         }
 
+        var buildOptions = function (file) {
+            if (typeof(opts) === 'object') {
+                return file.path ? _.assign({ sourcePath: file.path }, opts) : opts;
+            } else if (opts === undefined) {
+                return file.path ? { sourcePath: file.path} : undefined;
+            } else {
+                return opts;
+            }
+        };
+
         return through.obj(function(file, enc, cb) {
             var srcEnc = enc || srcEncoding || 'utf-8';
             var trgEnc = trgEncoding || srcEnc;
@@ -104,13 +115,15 @@ var gulpTransformation = function(f, srcEncoding, trgEncoding) {
                 return;
             }
             if (file.isBuffer()) {
-                file.contents = processBuffer(file.contents, f, opts, srcEnc, trgEnc);
+                file.contents = processBuffer(file.contents,
+                    f, buildOptions(file), srcEnc, trgEnc);
                 this.push(file);
                 cb();
                 return;
             }
             if (file.isStream()) {
-                var transformStream = new TransformStream(f, opts);
+                var transformStream = new TransformStream(
+                    f, buildOptions(file));
                 transformStream.on('error', this.emit.bind(this, 'error'));
                 file.contents = file.contents.pipe(transformStream);
                 this.push(file);

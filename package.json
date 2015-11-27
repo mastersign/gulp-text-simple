@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/mastersign/gulp-text-simple#readme",
   "dependencies": {
+    "lodash": "^3.0.0",
     "readable-stream": "^2.0.0",
     "through2": "^2.0.0"
   },
