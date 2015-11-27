@@ -2,6 +2,7 @@
 
 var assert = require('assert');
 var File = require('vinyl');
+var es = require('event-stream');
 var tf = require('../src/index.js');
 
 describe('gulp-simple-text', function () {
@@ -198,6 +199,162 @@ describe('gulp-simple-text', function () {
 					var result = file.contents.toString('utf-8');
 					assert.equal(result, expected, 'did not convert the Array result properly');
 					done();
+				});
+			});
+
+		});
+
+		describe('in stream mode', function () {
+
+			it('should pass a stream file object', function (done) {
+				var fakeFile = new File({ contents: es.readArray(['a', 'b', 'c']) });
+				var f = function () { return "xyz"; };
+
+				var t = tf(f);
+				var gt = t();
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(file.isStream(), 'did not pass a stream object');
+					file.contents.pipe(es.wait(function (err, data) {
+						done();
+					}));
+				});
+			});
+
+			it('should call the transformation function once', function (done) {
+				var fakeFile = new File({ contents: es.readArray(['a', 'b', 'c']) });
+				var called = 0;
+				var f = function () { called++; return "xyz"; };
+
+				var t = tf(f);
+				var gt = t();
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(file.isStream(), 'did not pass a stream object');
+					file.contents.pipe(es.wait(function (err, data) {
+						assert.equal(called, 1,
+							'did not call transformation function once but ' + called + ' times');
+						done();
+					}));
+				});
+			});
+
+			it('should pass the input to the transformation function', function (done) {
+				var expected = "input \ntext\n";
+				var result = undefined;
+				var fakeFile = new File({ contents: es.readArray(['input', ' ', "\n", "text\n"]) });
+				var f = function (text) { result = text; return "xyz"; };
+
+				var t = tf(f);
+				var gt = t();
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(file.isStream(), 'did not pass a stream object');
+					file.contents.pipe(es.wait(function (err, data) {
+						assert.equal(result, expected, 'did not pass the input text to f');
+						done();
+					}));
+				});
+			});
+
+			it('should pass the options to the transformation function', function (done) {
+				var expected = { a: 1 };
+				var result = undefined;
+				var fakeFile = new File({ contents: es.readArray(['a', 'b', 'c']) });
+				var f = function (text, options) { result = options; return "xyz"; };
+
+				var t = tf(f);
+				var gt = t(expected);
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(file.isStream(), 'did not pass a stream object');
+					file.contents.pipe(es.wait(function (err, data) {
+						assert(result === expected, 'did not pass the options to f');
+						done();
+					}));
+				});
+			});
+
+			it('should pass a stream file with the result of f', function (done) {
+				var expected = "xyz";
+				var fakeFile = new File({ contents: es.readArray(['a', 'b', 'c']) });
+				var f = function (text) { return expected; };
+
+				var t = tf(f);
+				var gt = t();
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(file.isStream(), 'did not pass a stream object');
+					file.contents.pipe(es.wait(function (err, data) {
+						var result = data.toString();
+						assert.equal(result, expected, 'did not pass the result of f through the stream');
+						done();
+					}));
+				});
+			});
+
+			it('should convert a null result from f to an empty stream', function (done) {
+				var data = null;
+				var expected = '';
+				var fakeFile = new File({ contents: es.readArray(['a', 'b', 'c']) });
+				var f = function (text) { return data; };
+
+				var t = tf(f);
+				var gt = t();
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(file.isStream(), 'did not pass a stream object');
+					file.contents.pipe(es.wait(function (err, data) {
+						var result = data.toString();
+						assert.equal(result, expected, 'did not convert the null result properly');
+						done();
+					}));
+				});
+			});
+
+			it('should convert an Object result from f to an empty stream', function (done) {
+				var data = { a: 1, b: 2 };
+				var expected = JSON.stringify(data, null, '  ');
+				var fakeFile = new File({ contents: es.readArray(['a', 'b', 'c']) });
+				var f = function (text) { return data; };
+
+				var t = tf(f);
+				var gt = t();
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(file.isStream(), 'did not pass a stream object');
+					file.contents.pipe(es.wait(function (err, data) {
+						var result = data.toString();
+						assert.equal(result, expected, 'did not convert the Object result properly');
+						done();
+					}));
+				});
+			});
+
+			it('should convert an Array result from f to an empty stream', function (done) {
+				var data = [1, 2, "a", "b"];
+				var expected = JSON.stringify(data, null, '  ');
+				var fakeFile = new File({ contents: es.readArray(['a', 'b', 'c']) });
+				var f = function (text) { return data; };
+
+				var t = tf(f);
+				var gt = t();
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(file.isStream(), 'did not pass a stream object');
+					file.contents.pipe(es.wait(function (err, data) {
+						var result = data.toString();
+						assert.equal(result, expected, 'did not convert the Array result properly');
+						done();
+					}));
 				});
 			});
 

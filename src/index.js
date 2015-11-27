@@ -1,6 +1,9 @@
 /* globals require, Buffer */
 
 var through = require('through2');
+var stream = require('stream');
+var util = require('util');
+var Transform = stream.Transform || require('readable-stream').Transform;
 
 var processBuffer = function(buffer, f, opts, srcEncoding, trgEncoding) {
     var src = buffer.toString(srcEncoding);
@@ -11,6 +14,33 @@ var processBuffer = function(buffer, f, opts, srcEncoding, trgEncoding) {
         result = JSON.stringify(result, null, '  ');
     }
     return new Buffer(result, trgEncoding);
+};
+
+var TransformStream = function (f, opts, streamOptions) {
+    this.textTransformFunction = f;
+    this.textTransformOptions = opts;
+    this.content = [];
+    Transform.call(this, streamOptions);
+};
+util.inherits(TransformStream, Transform);
+
+TransformStream.prototype._transform = function (chunk, enc, cb) {
+    var text = chunk.toString();
+    this.content.push(text);
+    cb();
+};
+TransformStream.prototype._flush = function (cb) {
+    var text = this.content.join('');
+    var result = undefined;
+    try {
+        result = this.textTransformFunction(text, this.textTransformOptions);
+    } catch(e) {
+        this.emit('error', e);
+        cb();
+        return;
+    }
+    this.push(result);
+    cb();
 };
 
 /**
@@ -76,7 +106,12 @@ var gulpTransformation = function(f, srcEncoding, trgEncoding) {
                 return;
             }
             if (file.isStream()) {
-                throw 'Streams are not supported.';
+                var transformStream = new TransformStream(f, opts);
+                transformStream.on('error', this.emit.bind(this, 'error'));
+                file.contents = file.contents.pipe(transformStream);
+                this.push(file);
+                cb();
+                return;
             }
         });
     };
