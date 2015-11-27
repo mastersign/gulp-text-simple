@@ -29,5 +29,9 @@
   "homepage": "https://github.com/mastersign/gulp-text-simple#readme",
   "dependencies": {
     "through2": "^2.0.0"
+  },
+  "devDependencies": {
+    "event-stream": "^3.0.0",
+    "vinyl": "^1.0.0"
   }
 }
