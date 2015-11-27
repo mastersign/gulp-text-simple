@@ -45,4 +45,42 @@ describe('gulp-simple-text', function () {
 
 	});
 
+	describe('as Gulp transformation', function () {
+
+		describe('with null files', function () {
+
+			it('should not call the transformation function', function (done) {
+				var fakeFile = new File({ contents: null });
+				var called = false;
+				var f = function () { called = true; };
+				
+				var t = tf(f);
+				var gt = t();
+				
+				gt.write(fakeFile);
+				
+				gt.once('data', function (file) {
+					assert(!called, 'called transformation function');
+					done();
+				});
+			});
+
+			it('should pass the file unchanged', function (done) {
+				var fakeFile = new File({ contents: null });
+
+				var t = tf(function () {});
+				var gt = t();
+				
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(file.isNull(), 'passed file is not a null file');
+					assert(file === fakeFile, 'file was not passed unchanged');
+					done();
+				});
+			});
+
+		});
+
+	});
+
 });
