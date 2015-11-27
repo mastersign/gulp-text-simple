@@ -131,6 +131,26 @@ describe('gulp-simple-text', function () {
 				});
 			});
 
+			it('should pass the sourcePath to the transformation function', function (done) {
+				var filePath = 'abc/file.txt';
+				var expected = { sourcePath: filePath };
+				var result = undefined;
+				var fakeFile = new File({ 
+					contents: new Buffer("abc", 'utf-8'),
+					path: filePath 
+				});
+				var f = function (text, options) { result = options; return "xyz"; };
+
+				var t = tf(f);
+				var gt = t(expected);
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert.deepEqual(result, expected, 'did not pass the options to f');
+					done();
+				});
+			});
+
 			it('should pass a buffer file with the result of f', function (done) {
 				var expected = "xyz";
 				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
@@ -255,6 +275,30 @@ describe('gulp-simple-text', function () {
 					assert(file.isStream(), 'did not pass a stream object');
 					file.contents.pipe(es.wait(function (err, data) {
 						assert.equal(result, expected, 'did not pass the input text to f');
+						done();
+					}));
+				});
+			});
+
+			it('should pass the sourcePath to the transformation function', function (done) {
+				var filePath = 'abc/file.txt';
+				var options = { a: 1, b: 2};
+				var expected = { a: 1, b: 2, sourcePath: filePath };
+				var result = undefined;
+				var fakeFile = new File({ 
+					contents: es.readArray(['a', 'b', 'c']),
+					path: filePath
+				});
+				var f = function (text, options) { result = options; return "xyz"; };
+
+				var t = tf(f);
+				var gt = t(options);
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(file.isStream(), 'did not pass a stream object');
+					file.contents.pipe(es.wait(function (err, data) {
+						assert.deepEqual(result, expected, 'did not pass the sourcePath to f');
 						done();
 					}));
 				});
