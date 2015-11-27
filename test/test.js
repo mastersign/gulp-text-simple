@@ -8,13 +8,13 @@ describe('gulp-simple-text', function () {
 
 	describe('as transparent function', function () {
 
-		it('should call the transformation function', function () {
-			var called = false;
-			var f = function () { called = true; };
+		it('should call the transformation function once', function () {
+			var called = 0;
+			var f = function () { called++; };
 			var t = tf(f);
-			assert(!called, 'called f during construction');
+			assert.equal(called, 0, 'called f during construction');
 			t("text");
-			assert(called, 'did not call f during application with string');
+			assert.equal(called, 1, 'did not call transformation function once but ' + called + ' times');
 		});
 
 		it('should pass the input text to the transformation function', function () {
@@ -83,17 +83,17 @@ describe('gulp-simple-text', function () {
 
 		describe('in buffer mode', function () {
 			
-			it('should call the transformation function', function (done) {
+			it('should call the transformation function once', function (done) {
 				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
-				var called = false;
-				var f = function () { called = true; return "xyz"; };
+				var called = 0;
+				var f = function () { called++; return "xyz"; };
 
 				var t = tf(f);
 				var gt = t();
 
 				gt.write(fakeFile);
 				gt.once('data', function (file) {
-					assert(called, 'did not call transformation function');
+					assert.equal(called, 1, 'did not call transformation function once but ' + called + ' times');
 					done();
 				});
 			});
