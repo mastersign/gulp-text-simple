@@ -5,15 +5,19 @@ var stream = require('stream');
 var util = require('util');
 var Transform = stream.Transform || require('readable-stream').Transform;
 
-var processBuffer = function(buffer, f, opts, srcEncoding, trgEncoding) {
-    var src = buffer.toString(srcEncoding);
-    var result = f(src, opts);
+var safeTransformResult = function (result) {
     if (result === undefined || result === null) {
         result = '';
     } else if (typeof(result) !== 'string') {
         result = JSON.stringify(result, null, '  ');
     }
-    return new Buffer(result, trgEncoding);
+    return result;
+};
+
+var processBuffer = function (buffer, f, opts, srcEncoding, trgEncoding) {
+    var src = buffer.toString(srcEncoding);
+    var result = f(src, opts);
+    return new Buffer(safeTransformResult(result), trgEncoding);
 };
 
 var TransformStream = function (f, opts, streamOptions) {
@@ -39,7 +43,7 @@ TransformStream.prototype._flush = function (cb) {
         cb();
         return;
     }
-    this.push(result);
+    this.push(safeTransformResult(result));
     cb();
 };
 
