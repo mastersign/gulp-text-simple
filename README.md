@@ -1,6 +1,9 @@
 GulpText _simple_
 =================
 
+[![npm package][npm-img]][npm-url]
+[![build status][travis-img]][travis-url]
+
 > simple creation of Gulp task functions for transforming text files
 
 A lot of Gulp tasks are dealing with text files.
@@ -90,3 +93,8 @@ License
 -------
 
 MIT
+
+[npm-url]: https://www.npmjs.com/package/gulp-text-simple
+[npm-img]: https://img.shields.io/npm/v/gulp-text-simple.svg
+[travis-img]: https://img.shields.io/travis/mastersign/gulp-text-simple/master.svg
+[travis-url]: https://travis-ci.org/mastersign/gulp-text-simple
