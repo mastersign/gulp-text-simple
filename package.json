@@ -1,8 +1,8 @@
 {
   "name": "gulp-text-simple",
   "version": "0.1.0",
-  "main": "index.js",
   "description": "simple creation of Gulp task functions for transforming text files",
+  "main": "src/index.js",
   "files": [
     "src",
     "test"
