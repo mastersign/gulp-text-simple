@@ -11,7 +11,7 @@ But if you want to write a custom Gulp task for it, you have to deal with buffer
 Application
 -----------
 
-With GulpText _simple_ you can just implement a function taking a string an returning a string. And it will create a Gulp transformation for you, which you can just pass to `.pipe()`.
+With GulpText _simple_ you can just implement a function taking a string an returning a string. And it will create a Gulp transformation factory for you, which you can just use with `.pipe()`.
 
 ~~~ js
 var gulp = require('gulp');
@@ -22,12 +22,12 @@ var transformString = function (s) {
     return s.toLowerCase();
 };
 
-// create the Gulp transformation function with GulpText simple
+// create the Gulp transformation factory with GulpText simple
 var transformation = textTransform(transformString);
 
 gulp.task('default', function() {
     return gulp.src('src/*.txt')
-        .pipe(transformation) // pass the transformation function to Gulp
+        .pipe(transformation()) // create the transformation and pass it to Gulp
         .pipe(gulp.dest('out/'));
 });
 ~~~
