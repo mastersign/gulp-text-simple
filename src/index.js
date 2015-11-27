@@ -5,6 +5,11 @@ var through = require('through2');
 var processBuffer = function(buffer, f, opts, srcEncoding, trgEncoding) {
     var src = buffer.toString(srcEncoding);
     var result = f(src, opts);
+    if (result === undefined || result === null) {
+        result = '';
+    } else if (typeof(result) !== 'string') {
+        result = JSON.stringify(result, null, '  ');
+    }
     return new Buffer(result, trgEncoding);
 };
 
