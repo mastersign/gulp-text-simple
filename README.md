@@ -20,7 +20,8 @@ Features
 * passing the source path of the vinyl file as option into the transformation function
 * the transformation factory behaves like the transformation function,
   if the first argument is a string
-* automatic JSON conversion of non-string results from the transformation function 
+* transforming the content of a text file directly
+* automatic JSON conversion of non-string results from the transformation function
 
 Application
 -----------
@@ -110,6 +111,16 @@ var transformString = function (s, options) {
 var transformation = textTransformation(transformString);
 
 transformation("ABC"); // -> "abc"
+~~~
+
+You can call `.readFileSync(filePath, [options])` to transform the content of a file directly.
+
+~~~ js
+var transformation = textTransformation(function (s) { 
+    return s.toLowerCase(); 
+});
+
+transformation.readFileSync('my/text_file.txt');
 ~~~
 
 License
