@@ -1,5 +1,7 @@
 /* globals require, Buffer */
 
+var path = require('path');
+var fs = require('fs');
 var _ = require('lodash');
 var through = require('through2');
 var stream = require('stream');
@@ -72,15 +74,17 @@ TransformStream.prototype._flush = function (cb) {
  * @param {string} srcEncoding - (optional) The source encoding
  * @param {string} trgEncoding - (optional) The target encoding
  */
-var gulpTransformation = function(f, srcEncoding, trgEncoding) {
+var textTransformation = function(f, srcEncoding, trgEncoding) {
     
     /*
-     * function() -> Gulp transformation with f(fileContent)
-     * function("text") -> result of f("text")
-     * function(options) -> Gulp transformation with f(fileContent, options)
-     * function("text", options) -> result of f("text", options) 
+     * factory() -> Gulp transformation with f(fileContent)
+     * factory("text") -> result of f("text")
+     * factory(options) -> Gulp transformation with f(fileContent, options)
+     * factory("text", options) -> result of f("text", options)
+     * factory.readFileSync(path) -> result of f(fileContent)
+     * factory.readFileSync(path, options) -> result of f (fileContent, options)
      */
-    return function () {
+    var factory = function () {
         var opts = undefined;
 
         if (arguments.length === 0) {
@@ -134,6 +138,17 @@ var gulpTransformation = function(f, srcEncoding, trgEncoding) {
             }
         });
     };
+    
+    factory.readFileSync = function (filePath, options) {
+        filePath = path.resolve(filePath);
+        options = options || { };
+        options = _.assign({ sourcePath: filePath }, options);
+        var encoding = options.encoding || 'utf-8';
+        var text = fs.readFileSync(filePath, encoding);
+        return f(text, options);
+    };
+    
+    return factory;
 };
 
-module.exports = gulpTransformation;
+module.exports = textTransformation;
