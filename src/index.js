@@ -98,11 +98,11 @@ var gulpTransformation = function(f, srcEncoding, trgEncoding) {
             return f(arguments[0], arguments[1]);
         }
 
+        opts = opts || { };
+
         var buildOptions = function (file) {
             if (typeof(opts) === 'object') {
                 return file.path ? _.assign({ sourcePath: file.path }, opts) : opts;
-            } else if (opts === undefined) {
-                return file.path ? { sourcePath: file.path} : undefined;
             } else {
                 return opts;
             }
