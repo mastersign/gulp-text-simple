@@ -1,6 +1,8 @@
 /* globals require, Buffer, describe, it */
 
 var assert = require('assert');
+var fs = require('fs');
+var path = require('path');
 var File = require('vinyl');
 var es = require('event-stream');
 var tf = require('../src/index.js');
@@ -42,6 +44,88 @@ describe('gulp-simple-text', function () {
 			var t = tf(f);
 			var result = t("something");
 			assert(expected === result, 'did not return the result of f');
+		});
+
+	});
+	
+	describe('as .readFileSync() function', function () {
+
+		describe('with existing file', function () {
+
+			it('should call the transformation function once', function () {
+				var sourcePath = 'test/data/sample.txt';
+				var called = 0;
+				var f = function () { called++; };
+				var t = tf(f);
+				t.readFileSync(sourcePath);
+				assert.equal(called, 1, 'called the transformation function ' + called + ' times');
+			});
+
+			it('should read the file and pass it to the transformation function', function () {
+				var sourcePath = 'test/data/sample.txt';
+				var expected = fs.readFileSync(sourcePath, 'utf-8');
+				var result = undefined;
+				var f = function (text) { result = text; };
+				var t = tf(f);
+				t.readFileSync(sourcePath);
+				assert.equal(result, expected, 'did not pass the file content to f');
+			});
+
+			it('should pass the source path to the transformation function', function () {
+				var sourcePath = 'test/data/sample.txt';
+				var expected = { sourcePath: path.resolve(sourcePath) };
+				var result = undefined;
+				var f = function (text, options) { result = options; };
+				var t = tf(f);
+				t.readFileSync(sourcePath);
+				assert.deepEqual(result, expected, 'did not pass the source path to f');
+			});
+
+			it('should pass options to the transformation function', function () {
+				var sourcePath = 'test/data/sample.txt';
+				var expected = { sourcePath: path.resolve(sourcePath), a: 1, b: 'xyz' };
+				var result = undefined;
+				var f = function (text, options) { result = options; };
+				var t = tf(f);
+				t.readFileSync(sourcePath, {a: 1, b: 'xyz'});
+				assert.deepEqual(result, expected, 'did not pass the options to f');
+			});
+
+			it('should return the result of the transformation function', function () {
+				var sourcePath = 'test/data/sample.txt';
+				var expected = "abc";
+				var f = function () { return expected; };
+				var t = tf(f);
+				var result = t.readFileSync(sourcePath);
+				assert(result === expected, 'did not pass the result of f');
+			});
+
+		});
+
+		describe('with non existing file', function () {
+
+			it('should not call the transformation function', function () {
+				var sourcePath = 'test/data/not existing.txt';
+				var called = 0;
+				var f = function () { called++; };
+				var t = tf(f);
+				try {
+					t.readFileSync(sourcePath);
+				} catch (e) { }
+				assert.equal(called, 0, 'called the transformation function ' + called + ' times');
+			});
+
+			it('should raise an error', function () {
+				var sourcePath = 'test/data/not existing.txt';
+				var f = function () { };
+				var t = tf(f);
+				assert.throws(function () {
+					t.readFileSync(sourcePath);
+				}, function(err) {
+					return (err instanceof Error) && (err.code === 'ENOENT');
+				});
+			});
+
 		});
 
 	});
