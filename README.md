@@ -135,4 +135,4 @@ GulpText _simple_ is published under MIT license.
 [npm-img]: https://img.shields.io/npm/v/gulp-text-simple.svg
 [travis-img]: https://img.shields.io/travis/mastersign/gulp-text-simple/master.svg
 [travis-url]: https://travis-ci.org/mastersign/gulp-text-simple
-[Gulp]: http://gulp.js
+[Gulp]: http://gulpjs.com
