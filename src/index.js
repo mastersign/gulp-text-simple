@@ -63,7 +63,9 @@ TransformStream.prototype._flush = function (cb) {
  * optionally a second non-string argument it behaves like the
  * text transformation function f.
  * 
- * If the text transformation function f returns an array or an object,
+ * If the text transformation function returns a falsy value,
+ * the Gulp transformation yields an empty file.
+ * If the text transformation function f does not return a string,
  * the Gulp transformation serializes the result with JSON.stringify().
  * 
  * @param {function} f - A transformation function from string to string
