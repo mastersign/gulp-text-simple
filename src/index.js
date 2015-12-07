@@ -17,10 +17,12 @@ var safeTransformResult = function (result) {
     return result;
 };
 
-var processBuffer = function (buffer, f, opts, srcEncoding, trgEncoding) {
-    var src = buffer.toString(srcEncoding);
+var processBuffer = function (buffer, f, opts) {
+    var srcEnc = opts.sourceEncoding || 'utf8';
+    var trgEnc = opts.targetEncoding || 'utf8';
+    var src = buffer.toString(srcEnc);
     var result = f(src, opts);
-    return new Buffer(safeTransformResult(result), trgEncoding);
+    return new Buffer(safeTransformResult(result), trgEnc);
 };
 
 var TransformStream = function (f, opts, streamOptions) {
@@ -32,12 +34,13 @@ var TransformStream = function (f, opts, streamOptions) {
 util.inherits(TransformStream, Transform);
 
 TransformStream.prototype._transform = function (chunk, enc, cb) {
-    var text = chunk.toString();
-    this.content.push(text);
+    this.content.push(chunk);
     cb();
 };
 TransformStream.prototype._flush = function (cb) {
-    var text = this.content.join('');
+    var srcEnc = this.textTransformOptions.sourceEncoding || 'utf8';
+    var trgEnc = this.textTransformOptions.targetEncoding || 'utf8';
+    var text = Buffer.concat(this.content).toString(srcEnc);
     var result = undefined;
     try {
         result = this.textTransformFunction(text, this.textTransformOptions);
@@ -46,7 +49,7 @@ TransformStream.prototype._flush = function (cb) {
         cb();
         return;
     }
-    this.push(safeTransformResult(result));
+    this.push(new Buffer(safeTransformResult(result), trgEnc));
     cb();
 };
 
@@ -71,11 +74,12 @@ TransformStream.prototype._flush = function (cb) {
  * the Gulp transformation serializes the result with JSON.stringify().
  * 
  * @param {function} f - A transformation function from string to string
- * @param {string} srcEncoding - (optional) The source encoding
- * @param {string} trgEncoding - (optional) The target encoding
+ * @param {map} defaultOptions - (optional) A predefined options map for factory. 
  */
-var textTransformation = function(f, srcEncoding, trgEncoding) {
-    
+var textTransformation = function(f, defaultOptions) {
+
+    var defOpts = _.assign({ sourceEncoding: null }, defaultOptions || { });
+
     /*
      * factory() -> Gulp transformation with f(fileContent)
      * factory("text") -> result of f("text")
@@ -102,7 +106,7 @@ var textTransformation = function(f, srcEncoding, trgEncoding) {
             return f(arguments[0], arguments[1]);
         }
 
-        opts = opts || { };
+        opts = _.assign(defOpts, opts || { });
 
         var buildOptions = function (file) {
             if (typeof(opts) === 'object') {
@@ -113,8 +117,9 @@ var textTransformation = function(f, srcEncoding, trgEncoding) {
         };
 
         return through.obj(function(file, enc, cb) {
-            var srcEnc = enc || srcEncoding || 'utf-8';
-            var trgEnc = trgEncoding || srcEnc;
+            var localOpts = buildOptions(file);
+            var srcEnc = localOpts.sourceEncoding || enc;
+            var trgEnc = localOpts.targetEncoding || srcEnc;
             if (file.isNull()) {
                 this.push(file);
                 cb();
@@ -122,14 +127,14 @@ var textTransformation = function(f, srcEncoding, trgEncoding) {
             }
             if (file.isBuffer()) {
                 file.contents = processBuffer(file.contents,
-                    f, buildOptions(file), srcEnc, trgEnc);
+                    f, localOpts, srcEnc, trgEnc);
                 this.push(file);
                 cb();
                 return;
             }
             if (file.isStream()) {
                 var transformStream = new TransformStream(
-                    f, buildOptions(file));
+                    f, localOpts, null);
                 transformStream.on('error', this.emit.bind(this, 'error'));
                 file.contents = file.contents.pipe(transformStream);
                 this.push(file);
@@ -138,16 +143,16 @@ var textTransformation = function(f, srcEncoding, trgEncoding) {
             }
         });
     };
-    
+
     factory.readFileSync = function (filePath, options) {
         filePath = path.resolve(filePath);
         options = options || { };
-        options = _.assign({ sourcePath: filePath }, options);
-        var encoding = options.encoding || 'utf-8';
+        options = _.assign({ sourcePath: filePath }, defOpts, options);
+        var encoding = options.sourceEncoding || 'utf8';
         var text = fs.readFileSync(filePath, encoding);
         return f(text, options);
     };
-    
+
     return factory;
 };
 
