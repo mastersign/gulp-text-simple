@@ -73,22 +73,22 @@ describe('gulp-simple-text', function () {
 
 			it('should pass the source path to the transformation function', function () {
 				var sourcePath = 'test/data/sample.txt';
-				var expected = { sourcePath: path.resolve(sourcePath) };
+				var expected = path.resolve(sourcePath);
 				var result = undefined;
 				var f = function (text, options) { result = options; };
 				var t = tf(f);
 				t.readFileSync(sourcePath);
-				assert.deepEqual(result, expected, 'did not pass the source path to f');
+				assert.deepEqual(result.sourcePath, expected, 'did not pass the source path to f');
 			});
 
 			it('should pass options to the transformation function', function () {
 				var sourcePath = 'test/data/sample.txt';
-				var expected = { sourcePath: path.resolve(sourcePath), a: 1, b: 'xyz' };
+				var input = { a: 1 };
 				var result = undefined;
 				var f = function (text, options) { result = options; };
 				var t = tf(f);
-				t.readFileSync(sourcePath, {a: 1, b: 'xyz'});
-				assert.deepEqual(result, expected, 'did not pass the options to f');
+				t.readFileSync(sourcePath, input);
+				assert.deepEqual(result.a, input.a, 'did not pass the options to f');
 			});
 
 			it('should return the result of the transformation function', function () {
@@ -98,6 +98,26 @@ describe('gulp-simple-text', function () {
 				var t = tf(f);
 				var result = t.readFileSync(sourcePath);
 				assert(result === expected, 'did not pass the result of f');
+			});
+			
+			it('should respect the sourceEncoding default option', function () {
+				var sourcePath = 'test/data/german-utf-16-le.txt';
+				var expected = fs.readFileSync(sourcePath, 'utf16le');
+				var result = undefined;
+				var f = function (text) { result = text; }
+				var t = tf(f, { sourceEncoding: 'utf16le' });
+				t.readFileSync(sourcePath);
+				assert.equal(result, expected, 'did not respect encoding');
+			});
+
+			it('should respect the sourceEncoding option', function () {
+				var sourcePath = 'test/data/german-utf-16-le.txt';
+				var expected = fs.readFileSync(sourcePath, 'utf16le');
+				var result = undefined;
+				var f = function (text) { result = text; }
+				var t = tf(f);
+				t.readFileSync(sourcePath, { sourceEncoding: 'utf16le' });
+				assert.equal(result, expected, 'did not respect encoding');
 			});
 
 		});
@@ -305,6 +325,72 @@ describe('gulp-simple-text', function () {
 				});
 			});
 
+			it('should respect the sourceEncoding default option', function (done) {
+				var data = fs.readFileSync('test/data/german-utf-16-le.txt');
+				var expected = fs.readFileSync('test/data/german-utf-16-le.txt', 'utf16le');
+				var fakeFile = new File({ contents: data });
+				var result = undefined;
+				var f = function (text) { result = text; };
+
+				var t = tf(f, { sourceEncoding: 'utf16le' });
+				var gt = t();
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert.equal(result, expected, 'did not respect the source encoding');
+					done();
+				});
+			});
+
+			it('should respect the sourceEncoding option', function (done) {
+				var data = fs.readFileSync('test/data/german-utf-16-le.txt');
+				var expected = fs.readFileSync('test/data/german-utf-16-le.txt', 'utf16le');
+				var fakeFile = new File({ contents: data });
+				var result = undefined;
+				var f = function (text) { result = text; };
+
+				var t = tf(f);
+				var gt = t({ sourceEncoding: 'utf16le' });
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert.equal(result, expected, 'did not respect the source encoding');
+					done();
+				});
+			});
+
+			it('should respect the targetEncoding default option', function (done) {
+				var expected = fs.readFileSync('test/data/german-utf-8.txt', 'utf8');
+				var fakeFile = new File({ contents: new Buffer('abc', 'utf8') });
+				var f = function (text) { return expected; };
+
+				var t = tf(f, { targetEncoding: 'utf16le' });
+				var gt = t();
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					var result = file.contents.toString('utf16le');
+					assert.equal(result, expected, 'did not respect the source encoding');
+					done();
+				});
+			});
+
+			it('should respect the targetEncoding option', function (done) {
+				var expected = fs.readFileSync('test/data/german-utf-8.txt', 'utf8');
+				var fakeFile = new File({ contents: new Buffer('abc', 'utf8') });
+				var f = function (text) { return expected; };
+
+				var t = tf(f);
+				var gt = t({ targetEncoding: 'utf16le' });
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					var result = file.contents.toString('utf16le');
+					assert.equal(result, expected, 'did not respect the source encoding');
+					done();
+				});
+			});
+
 		});
 
 		describe('in stream mode', function () {
@@ -479,6 +565,86 @@ describe('gulp-simple-text', function () {
 						var result = data.toString();
 						assert.equal(result, expected, 'did not convert the Array result properly');
 						done();
+					}));
+				});
+			});
+
+			it('should respect the sourceEncoding default option', function (done) {
+				var expected = fs.readFileSync('test/data/german-utf-16-le.txt', 'utf16le');
+				var s = fs.createReadStream('test/data/german-utf-16-le.txt');
+				var fakeFile = new File({ contents: s });
+				var result = undefined;
+				var f = function (text) { result = text; return text; };
+
+				var t = tf(f, { sourceEncoding: 'utf16le' });
+				var gt = t();
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(file.isStream(), 'did not pass a stream object');
+					file.contents.pipe(es.wait(function (err, data) {
+						assert.equal(result, expected, 'did not respect source encoding');
+						done(); 
+					}));
+				});
+			});
+
+			it('should respect the sourceEncoding option', function (done) {
+				var expected = fs.readFileSync('test/data/german-utf-16-le.txt', 'utf16le');
+				var s = fs.createReadStream('test/data/german-utf-16-le.txt');
+				var fakeFile = new File({ contents: s });
+				var result = undefined;
+				var f = function (text) { result = text; return text; };
+
+				var t = tf(f);
+				var gt = t({ sourceEncoding: 'utf16le' });
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(file.isStream(), 'did not pass a stream object');
+					file.contents.pipe(es.wait(function (err, data) {
+						assert.equal(result, expected, 'did not respect source encoding');
+						done(); 
+					}));
+				});
+			});
+
+			it('should respect the targetEncoding default option', function (done) {
+				var expected = fs.readFileSync('test/data/german-utf-8.txt', 'utf8');
+				var s = fs.createReadStream('test/data/german-utf-8.txt');
+				var fakeFile = new File({ contents: s });
+
+				var f = function (text) { return expected; };
+				var t = tf(f, { targetEncoding: 'utf16le' });
+				var gt = t();
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(file.isStream(), 'did not pass a stream object');
+					file.contents.pipe(es.wait(function (err, data) {
+						var result = data.toString('utf16le');
+						assert.equal(result, expected, 'did not respect target encoding');
+						done(); 
+					}));
+				});
+			});
+
+			it('should respect the targetEncoding option', function (done) {
+				var expected = fs.readFileSync('test/data/german-utf-8.txt', 'utf8');
+				var s = fs.createReadStream('test/data/german-utf-8.txt');
+				var fakeFile = new File({ contents: s });
+
+				var f = function (text) { return expected; };
+				var t = tf(f);
+				var gt = t({ targetEncoding: 'utf16le' });
+
+				gt.write(fakeFile);
+				gt.once('data', function (file) {
+					assert(file.isStream(), 'did not pass a stream object');
+					file.contents.pipe(es.wait(function (err, data) {
+						var result = data.toString('utf16le');
+						assert.equal(result, expected, 'did not respect target encoding');
+						done(); 
 					}));
 				});
 			});
