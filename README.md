@@ -241,7 +241,7 @@ var result = myTransformation.readFileSync('my/text_file.txt');
 console.log(result);
 ```
 
-### Read, transform, an write asynchronously
+### Read, transform, and write asynchronously
 
 You can call `.transformFile(sourcePath, targetPath[, options], callback)` on the factory,
 to read, transform, and write the content of a file asynchronously.
