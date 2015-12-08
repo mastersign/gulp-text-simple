@@ -19,12 +19,13 @@ Features
 
 * support for buffer file objects
 * support for stream file objects
-* transforming the content of a text file directly
 * supports passing additional [options](#options) to the transformation function
 * passing the [source path](#source-path) of the vinyl file as an option into the transformation function
 * control the input and output [encoding](#encoding)
 * the transformation factory behaves [like the transformation function](#use-as-a-function),
   if the first argument is a string
+* transforming the content of a text file [synchronously](#read-and-transform-synchronously)
+  and [asynchronously](#read-and-transform-asynchronously)
 * automatic JSON conversion of non-string results from the transformation function
 
 Introduction
@@ -160,6 +161,7 @@ Calling GulpText _simple_ creates a factory which can be used in a number of dif
 
 * call `t("text"[, options])` like the original transformation function
 * call `t([options])`, to create a Gulp transformation
+* call `t.readFile(filePath[, options], callback)` to read and transform a file asynchronously
 * call `t.readFileSync(filePath[, options])` to read and transform a file synchronously 
 
 ### Usa as a Function
@@ -199,6 +201,25 @@ gulp.task('default', function () {
     return gulp.src('src/*.txt')
         .pipe(myTransformation()) // create the Gulp transformation and insert it into the Gulp stream
         .pipe(gulp.dest('out/'));
+});
+```
+
+### Read and transform asynchronously
+
+You can call `.readFile(filePath[, options], callback)` on the factory,
+to read and transform the content of a file asynchronously.
+
+``` js
+var myTransformation = textTransformation(function (s) {
+    return s.toLowerCase();
+});
+
+myTransformation.readFile(function (err, result) {
+    if (err) {
+        console.log(err);
+    } else {
+        console.log(result);
+    }
 });
 ```
 
