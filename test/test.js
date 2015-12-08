@@ -1,8 +1,9 @@
-/* globals require, Buffer, describe, it */
+/* globals require, Buffer, describe, it, before, beforeEach */
 
 var assert = require('assert');
 var fs = require('fs');
 var path = require('path');
+var del = require('del');
 var File = require('vinyl');
 var es = require('event-stream');
 var tf = require('../src/index.js');
@@ -274,11 +275,207 @@ describe('gulp-simple-text', function () {
 				});
 			});
 
-			it('should raise an error', function (done) {
+			it('should pass the ENOENT error', function (done) {
 				var sourcePath = 'test/data/not existing.txt';
 				var f = function () { };
 				var t = tf(f);
 				t.readFile(sourcePath, function (err, data) {
+					assert((err instanceof Error) && (err.code === 'ENOENT'),
+						'did not passed the expected error');
+					done();
+				});
+			});
+
+		});
+
+	});
+
+	describe('as .transformFile() function', function () {
+
+		before(function () {
+			try {
+				var stats = fs.statSync('tmp');
+				if (stats.isFile()) {
+					throw new Error('the name tmp is needed for a temporary directory, remove the file with this name');
+				}
+			} catch (e) { }
+		});
+
+		beforeEach(function () {
+			try {
+				var stats = fs.statSync('tmp');
+				if (stats.isDirectory()) {
+					del.sync(['tmp']);
+				}
+			} catch (e) { }
+			fs.mkdirSync('tmp');
+		});
+
+		describe('with existing file', function () {
+
+			it('should call the transformation function once', function (done) {
+				var sourcePath = 'test/data/sample.txt';
+				var targetPath = 'tmp/sample.txt';
+				var called = 0;
+				var f = function () { called++; };
+				var t = tf(f);
+				t.transformFile(sourcePath, targetPath, function (err) {
+					assert.equal(called, 1, 'called the transformation function ' + called + ' times');
+					done();
+				});
+			});
+
+			it('should read the file and pass it to the transformation function', function (done) {
+				var sourcePath = 'test/data/sample.txt';
+				var targetPath = 'tmp/sample.txt';
+				var expected = fs.readFileSync(sourcePath, 'utf-8');
+				var result = undefined;
+				var f = function (text) { result = text; };
+				var t = tf(f);
+				t.transformFile(sourcePath, targetPath, function (err) {
+					assert.equal(result, expected, 'did not pass the file content to f');
+					done();
+				});
+			});
+
+			it('should pass the source path to the transformation function', function (done) {
+				var sourcePath = 'test/data/sample.txt';
+				var targetPath = 'tmp/sample.txt';
+				var expected = path.resolve(sourcePath);
+				var result = undefined;
+				var f = function (text, options) { result = options; };
+				var t = tf(f);
+				t.transformFile(sourcePath, targetPath, function (err) {
+					assert.deepEqual(result.sourcePath, expected, 'did not pass the source path to f');
+					done();
+				});
+			});
+
+			it('should pass options to the transformation function', function (done) {
+				var sourcePath = 'test/data/sample.txt';
+				var targetPath = 'tmp/sample.txt';
+				var input = { a: 1 };
+				var result = undefined;
+				var f = function (text, options) { result = options; };
+				var t = tf(f);
+				t.transformFile(sourcePath, targetPath, input, function (err) {
+					assert.deepEqual(result.a, input.a, 'did not pass the options to f');
+					done();
+				});
+			});
+
+			it('should write the result of the transformation function', function (done) {
+				var sourcePath = 'test/data/sample.txt';
+				var targetPath = 'tmp/sample.txt';
+				var expected = "abc";
+				var f = function () { return expected; };
+				var t = tf(f);
+				t.transformFile(sourcePath, targetPath, function (err) {
+					var result = fs.readFileSync(targetPath, 'utf8');
+					assert.equal(result, expected, 'did not pass the result of f');
+					done();
+				});
+			});
+
+			it('should respect the sourceEncoding default option', function (done) {
+				var sourcePath = 'test/data/german-utf-16-le.txt';
+				var targetPath = 'tmp/sample.txt';
+				var expected = fs.readFileSync(sourcePath, 'utf16le');
+				var result = undefined;
+				var f = function (text) { result = text; }
+				var t = tf(f, { sourceEncoding: 'utf16le' });
+				t.transformFile(sourcePath, targetPath, function (err) {
+					assert.equal(result, expected, 'did not respect encoding');
+					done();
+				});
+			});
+
+			it('should respect the sourceEncoding option', function (done) {
+				var sourcePath = 'test/data/german-utf-16-le.txt';
+				var targetPath = 'tmp/sample.txt';
+				var expected = fs.readFileSync(sourcePath, 'utf16le');
+				var result = undefined;
+				var f = function (text) { result = text; }
+				var t = tf(f);
+				t.transformFile(sourcePath, targetPath, { sourceEncoding: 'utf16le' }, function (err) {
+					assert.equal(result, expected, 'did not respect encoding');
+					done();
+				});
+			});
+
+			it('should respect the targetEncoding default option', function (done) {
+				var sourcePath = 'test/data/german-utf-8.txt';
+				var targetPath = 'tmp/sample.txt';
+				var expected = fs.readFileSync(sourcePath, 'utf8');
+				var f = function (text) { return expected; }
+				var t = tf(f, { targetEncoding: 'utf16le' });
+				t.transformFile(sourcePath, targetPath, function (err) {
+					var result = fs.readFileSync(targetPath, 'utf16le');
+					assert.equal(result, expected, 'did not respect encoding');
+					done();
+				});
+			});
+
+			it('should respect the targetEncoding option', function (done) {
+				var sourcePath = 'test/data/german-utf-8.txt';
+				var targetPath = 'tmp/sample.txt';
+				var expected = fs.readFileSync(sourcePath, 'utf8');
+				var f = function (text) { return expected; }
+				var t = tf(f);
+				t.transformFile(sourcePath, targetPath, { targetEncoding: 'utf16le' }, function (err) {
+					var result = fs.readFileSync(targetPath, 'utf16le');
+					assert.equal(result, expected, 'did not respect encoding');
+					done();
+				});
+			});
+
+			it('should pass the error of the transformation function', function (done) {
+				var sourcePath = 'test/data/sample.txt';
+				var targetPath = 'tmp/sample.txt';
+				var expected = new Error('error message');
+				var f = function () { throw expected; };
+				var t = tf(f);
+				t.transformFile(sourcePath, targetPath, function (err) {
+					assert(err === expected, 'did not pass the error from f');
+					done();
+				});
+			});
+
+		});
+
+		describe('with non existing file', function () {
+
+			it('should not call the transformation function', function (done) {
+				var sourcePath = 'test/data/not existing.txt';
+				var targetPath = 'tmp/sample.txt';
+				var called = 0;
+				var f = function () { called++; };
+				var t = tf(f);
+				t.transformFile(sourcePath, targetPath, function (err) {
+					assert.equal(called, 0, 'called the transformation function ' + called + ' times');
+					done();
+				});
+			});
+
+			it('should not create the target file', function (done) {
+				var sourcePath = 'test/data/not existing.txt';
+				var targetPath = 'tmp/sample.txt';
+				var f = function () { };
+				var t = tf(f);
+				t.transformFile(sourcePath, targetPath, function (err) {
+					assert.throws(function () {
+						fs.accessSync(targetPath, fs.R_OK);
+					});
+					done();
+				});
+			});
+
+			it('should pass the ENOENT error', function (done) {
+				var sourcePath = 'test/data/not existing.txt';
+				var targetPath = 'tmp/sample.txt';
+				var f = function () { };
+				var t = tf(f);
+				t.transformFile(sourcePath, targetPath, function (err, data) {
 					assert((err instanceof Error) && (err.code === 'ENOENT'),
 						'did not passed the expected error');
 					done();

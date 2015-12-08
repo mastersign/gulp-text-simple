@@ -33,6 +33,7 @@
     "through2": "^2.0.0"
   },
   "devDependencies": {
+    "del": "^2.2.0",
     "event-stream": "^3.0.0",
     "vinyl": "^1.0.0"
   }
