@@ -24,8 +24,10 @@ Features
 * control the input and output [encoding](#encoding)
 * the transformation factory behaves [like the transformation function](#use-as-a-function),
   if the first argument is a string
-* transforming the content of a text file [synchronously](#read-and-transform-synchronously)
+* read and transform the content of a text file [synchronously](#read-and-transform-synchronously)
   and [asynchronously](#read-and-transform-asynchronously)
+* transform a text file [synchronously](#read-transform-and-write-synchronously)
+  and [asynchronously](#read-transform-and-write-asynchronously)
 * automatic JSON conversion of non-string results from the transformation function
 
 Introduction
@@ -162,7 +164,9 @@ Calling GulpText _simple_ creates a factory which can be used in a number of dif
 * call `t("text"[, options])` like the original transformation function
 * call `t([options])`, to create a Gulp transformation
 * call `t.readFile(filePath[, options], callback)` to read and transform a file asynchronously
-* call `t.readFileSync(filePath[, options])` to read and transform a file synchronously 
+* call `t.readFileSync(filePath[, options])` to read and transform a file synchronously
+* call `t.transformFile(sourcePath, targetPath[, options], callback)` to read, transform, and write a file asynchronously
+* call `t.transformFileSync(sourcePath, targetPath[, options])` to read, transform, and write a file synchronously
 
 ### Usa as a Function
 
@@ -214,7 +218,7 @@ var myTransformation = textTransformation(function (s) {
     return s.toLowerCase();
 });
 
-myTransformation.readFile(function (err, result) {
+myTransformation.readFile('my/text_file.txt', function (err, result) {
     if (err) {
         console.log(err);
     } else {
@@ -235,6 +239,36 @@ var myTransformation = textTransformation(function (s) {
 
 var result = myTransformation.readFileSync('my/text_file.txt');
 console.log(result);
+```
+
+### Read, transform, an write asynchronously
+
+You can call `.transformFile(sourcePath, targetPath[, options], callback)` on the factory,
+to read, transform, and write the content of a file asynchronously.
+
+``` js
+var myTransformation = textTransformation(function (s) {
+    return s.toLowerCase();
+});
+
+myTransformation.transformFile('my/text_file.txt', 'my/result.txt', function (err) {
+    if (err) {
+        console.log(err);
+    }
+});
+```
+
+### Read, transform, and write synchronously
+
+You can call `.transformFileSync(sourcePath, targetPath[, options])` on the factory,
+to read, transform, and write the content of a file synchronously.
+
+``` js
+var myTransformation = textTransformation(function (s) {
+    return s.toLowerCase();
+});
+
+myTransformation.transformFileSync('my/text_file.txt', 'my/result.txt');
 ```
 
 License
