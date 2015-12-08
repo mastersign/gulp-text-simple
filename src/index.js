@@ -176,6 +176,28 @@ var textTransformation = function(f, defaultOptions) {
             cb(error, result);
         });
     };
+    
+    factory.transformFile = function (sourceFilePath, targetFilePath) {
+        var options = arguments.length > 3 ? arguments[2] : null;
+        var cb = arguments.length > 3 ? arguments[3] : arguments[2];
+        options = buildOpts(options, sourceFilePath);
+        var srcEnc = options.sourceEncoding || 'utf8';
+        var trgEnc = options.targetEncoding || srcEnc;
+        fs.readFile(options.sourcePath, srcEnc, function (err, text) {
+            if (err) {
+                cb(err, null);
+                return;
+            }
+            var result = undefined;
+            try {
+                result = f(text, options);
+            } catch (e) {
+                cb(e, undefined);
+                return;
+            }
+            fs.writeFile(targetFilePath, result, trgEnc, cb);
+        });
+    };
 
     return factory;
 };
