@@ -166,7 +166,14 @@ var textTransformation = function(f, defaultOptions) {
                 cb(err, null);
                 return;
             }
-            cb(null, f(text, options));
+            var result = undefined;
+            var error = null;
+            try {
+                result = f(text, options);
+            } catch (e) {
+                error = e;
+            }
+            cb(error, result);
         });
     };
 
