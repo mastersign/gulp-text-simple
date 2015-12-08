@@ -177,6 +177,15 @@ var textTransformation = function(f, defaultOptions) {
         });
     };
     
+    factory.transformFileSync = function (sourceFilePath, targetFilePath, options) {
+        options = buildOpts(options, sourceFilePath);
+        var srcEnc = options.sourceEncoding || 'utf8';
+        var trgEnc = options.targetEncoding || srcEnc;
+        var text = fs.readFileSync(options.sourcePath, srcEnc);
+        var result = f(text, options);
+        fs.writeFileSync(targetFilePath, result, trgEnc);
+    };
+    
     factory.transformFile = function (sourceFilePath, targetFilePath) {
         var options = arguments.length > 3 ? arguments[2] : null;
         var cb = arguments.length > 3 ? arguments[3] : arguments[2];
