@@ -120,6 +120,18 @@ describe('gulp-simple-text', function () {
 				assert.equal(result, expected, 'did not respect encoding');
 			});
 
+			it('should pass the error of the transformation function', function () {
+				var sourcePath = 'test/data/sample.txt';
+				var expected = new Error('error message');
+				var f = function () { throw expected; };
+				var t = tf(f);
+				assert.throws(function () {
+					t.readFileSync(sourcePath);
+				}, function (err) {
+					return err === expected;
+				});
+			});
+
 		});
 
 		describe('with non existing file', function () {
@@ -232,6 +244,17 @@ describe('gulp-simple-text', function () {
 				var t = tf(f);
 				t.readFile(sourcePath, { sourceEncoding: 'utf16le' }, function (err, data) {
 					assert.equal(result, expected, 'did not respect encoding');
+					done();
+				});
+			});
+
+			it('should pass the error of the transformation function', function (done) {
+				var sourcePath = 'test/data/sample.txt';
+				var expected = new Error('error message');
+				var f = function () { throw expected; };
+				var t = tf(f);
+				t.readFile(sourcePath, function (err, data) {
+					assert(err === expected, 'did not pass the error from f');
 					done();
 				});
 			});
