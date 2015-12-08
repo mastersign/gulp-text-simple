@@ -99,7 +99,7 @@ describe('gulp-simple-text', function () {
 				var result = t.readFileSync(sourcePath);
 				assert(result === expected, 'did not pass the result of f');
 			});
-			
+
 			it('should respect the sourceEncoding default option', function () {
 				var sourcePath = 'test/data/german-utf-16-le.txt';
 				var expected = fs.readFileSync(sourcePath, 'utf16le');
@@ -143,6 +143,122 @@ describe('gulp-simple-text', function () {
 					t.readFileSync(sourcePath);
 				}, function(err) {
 					return (err instanceof Error) && (err.code === 'ENOENT');
+				});
+			});
+
+		});
+
+	});
+
+	describe('as .readFile() function', function () {
+
+		describe('with existing file', function () {
+
+			it('should call the transformation function once', function (done) {
+				var sourcePath = 'test/data/sample.txt';
+				var called = 0;
+				var f = function () { called++; };
+				var t = tf(f);
+				t.readFile(sourcePath, function (err, data) {
+					assert.equal(called, 1, 'called the transformation function ' + called + ' times');
+					done();
+				});
+			});
+
+			it('should read the file and pass it to the transformation function', function (done) {
+				var sourcePath = 'test/data/sample.txt';
+				var expected = fs.readFileSync(sourcePath, 'utf-8');
+				var result = undefined;
+				var f = function (text) { result = text; };
+				var t = tf(f);
+				t.readFile(sourcePath, function (err, data) {
+					assert.equal(result, expected, 'did not pass the file content to f');
+					done();
+				});
+			});
+
+			it('should pass the source path to the transformation function', function (done) {
+				var sourcePath = 'test/data/sample.txt';
+				var expected = path.resolve(sourcePath);
+				var result = undefined;
+				var f = function (text, options) { result = options; };
+				var t = tf(f);
+				t.readFile(sourcePath, function (err, data) {
+					assert.deepEqual(result.sourcePath, expected, 'did not pass the source path to f');
+					done();
+				});
+			});
+
+			it('should pass options to the transformation function', function (done) {
+				var sourcePath = 'test/data/sample.txt';
+				var input = { a: 1 };
+				var result = undefined;
+				var f = function (text, options) { result = options; };
+				var t = tf(f);
+				t.readFile(sourcePath, input, function (err, data) {
+					assert.deepEqual(result.a, input.a, 'did not pass the options to f');
+					done();
+				});
+			});
+
+			it('should return the result of the transformation function', function (done) {
+				var sourcePath = 'test/data/sample.txt';
+				var expected = "abc";
+				var f = function () { return expected; };
+				var t = tf(f);
+				t.readFile(sourcePath, function (err, data) {
+					assert(data === expected, 'did not pass the result of f');
+					done();
+				});
+			});
+
+			it('should respect the sourceEncoding default option', function (done) {
+				var sourcePath = 'test/data/german-utf-16-le.txt';
+				var expected = fs.readFileSync(sourcePath, 'utf16le');
+				var result = undefined;
+				var f = function (text) { result = text; }
+				var t = tf(f, { sourceEncoding: 'utf16le' });
+				t.readFile(sourcePath, function (err, data) {
+					assert.equal(result, expected, 'did not respect encoding');
+					done();
+				});
+			});
+
+			it('should respect the sourceEncoding option', function (done) {
+				var sourcePath = 'test/data/german-utf-16-le.txt';
+				var expected = fs.readFileSync(sourcePath, 'utf16le');
+				var result = undefined;
+				var f = function (text) { result = text; }
+				var t = tf(f);
+				t.readFile(sourcePath, { sourceEncoding: 'utf16le' }, function (err, data) {
+					assert.equal(result, expected, 'did not respect encoding');
+					done();
+				});
+			});
+
+		});
+
+		describe('with non existing file', function () {
+
+			it('should not call the transformation function', function (done) {
+				var sourcePath = 'test/data/not existing.txt';
+				var called = 0;
+				var f = function () { called++; };
+				var t = tf(f);
+				t.readFile(sourcePath, function (err, data) {
+					assert.equal(called, 0, 'called the transformation function ' + called + ' times');
+					done();
+				});
+			});
+
+			it('should raise an error', function (done) {
+				var sourcePath = 'test/data/not existing.txt';
+				var f = function () { };
+				var t = tf(f);
+				t.readFile(sourcePath, function (err, data) {
+					assert((err instanceof Error) && (err.code === 'ENOENT'),
+						'did not passed the expected error');
+					done();
 				});
 			});
 
