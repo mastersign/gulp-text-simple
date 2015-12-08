@@ -143,14 +143,31 @@ var textTransformation = function(f, defaultOptions) {
             }
         });
     };
+    
+    var buildOpts = function (options, filePath) {
+        var localOpts = { sourcePath: path.resolve(filePath) }; 
+        return _.assign(localOpts, defOpts, options || { });
+    };
 
     factory.readFileSync = function (filePath, options) {
-        filePath = path.resolve(filePath);
-        options = options || { };
-        options = _.assign({ sourcePath: filePath }, defOpts, options);
+        options = buildOpts(options, filePath);
         var encoding = options.sourceEncoding || 'utf8';
-        var text = fs.readFileSync(filePath, encoding);
+        var text = fs.readFileSync(options.sourcePath, encoding);
         return f(text, options);
+    };
+
+    factory.readFile = function (filePath) {
+        var options = arguments.length > 2 ? arguments[1] : null;
+        var cb = arguments.length > 2 ? arguments[2] : arguments[1];
+        options = buildOpts(options, filePath);
+        var encoding = options.sourceEncoding || 'utf8';
+        fs.readFile(options.sourcePath, encoding, function (err, text) {
+            if (err) {
+                cb(err, null);
+                return;
+            }
+            cb(null, f(text, options));
+        });
     };
 
     return factory;
