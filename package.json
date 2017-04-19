@@ -28,13 +28,13 @@
   },
   "homepage": "https://github.com/mastersign/gulp-text-simple#readme",
   "dependencies": {
-    "lodash": "^3.0.0",
-    "readable-stream": "^2.0.0",
+    "lodash": "^4.0.0",
+    "readable-stream": "^2.2.0",
     "through2": "^2.0.0"
   },
   "devDependencies": {
     "del": "^2.2.0",
-    "event-stream": "^3.0.0",
+    "event-stream": "^3.3.0",
     "vinyl": "^2.0.0"
   }
 }
