@@ -5,6 +5,7 @@ var fs = require('fs');
 var path = require('path');
 var del = require('del');
 var File = require('vinyl');
+var Readable = require('stream').Readable;
 var es = require('event-stream');
 var tf = require('../src/index.js');
 
@@ -751,7 +752,7 @@ describe('gulp-simple-text', function () {
 			});
 
 			it('should pass the sourcePath to the transformation function', function (done) {
-				var filePath = 'abc/file.txt';
+				var filePath = path.normalize('abc/file.txt');
 				var result = undefined;
 				var fakeFile = new File({ 
 					contents: new Buffer("abc", 'utf-8'),
@@ -910,8 +911,17 @@ describe('gulp-simple-text', function () {
 
 		describe('in stream mode', function () {
 
+			var createTextStream = function (lines) {
+				var s = new Readable();
+				lines.forEach(function(line) {
+					s.push(line);
+				}, this);
+				s.push(null);
+				return s;
+			};
+
 			it('should pass a stream file object', function (done) {
-				var fakeFile = new File({ contents: es.readArray(['a', 'b', 'c']) });
+				var fakeFile = new File({ contents: createTextStream(['a', 'b', 'c']) });
 				var f = function () { return "xyz"; };
 
 				var t = tf(f);
@@ -927,7 +937,7 @@ describe('gulp-simple-text', function () {
 			});
 
 			it('should call the transformation function once', function (done) {
-				var fakeFile = new File({ contents: es.readArray(['a', 'b', 'c']) });
+				var fakeFile = new File({ contents: createTextStream(['a', 'b', 'c']) });
 				var called = 0;
 				var f = function () { called++; return "xyz"; };
 
@@ -948,7 +958,7 @@ describe('gulp-simple-text', function () {
 			it('should pass the input to the transformation function', function (done) {
 				var expected = "input \ntext\n";
 				var result = undefined;
-				var fakeFile = new File({ contents: es.readArray(['input', ' ', "\n", "text\n"]) });
+				var fakeFile = new File({ contents: createTextStream(['input', ' ', "\n", "text\n"]) });
 				var f = function (text) { result = text; return "xyz"; };
 
 				var t = tf(f);
@@ -965,10 +975,10 @@ describe('gulp-simple-text', function () {
 			});
 
 			it('should pass the sourcePath to the transformation function', function (done) {
-				var filePath = 'abc/file.txt';
+				var filePath = path.normalize('abc/file.txt');
 				var result = undefined;
 				var fakeFile = new File({ 
-					contents: es.readArray(['a', 'b', 'c']),
+					contents: createTextStream(['a', 'b', 'c']),
 					path: filePath
 				});
 				var f = function (text, options) { result = options; return "xyz"; };
@@ -989,7 +999,7 @@ describe('gulp-simple-text', function () {
 			it('should pass the options to the transformation function', function (done) {
 				var input = { a: 1 };
 				var result = undefined;
-				var fakeFile = new File({ contents: es.readArray(['a', 'b', 'c']) });
+				var fakeFile = new File({ contents: createTextStream(['a', 'b', 'c']) });
 				var f = function (text, options) { result = options; return "xyz"; };
 
 				var t = tf(f);
@@ -1007,7 +1017,7 @@ describe('gulp-simple-text', function () {
 
 			it('should pass a stream file with the result of f', function (done) {
 				var expected = "xyz";
-				var fakeFile = new File({ contents: es.readArray(['a', 'b', 'c']) });
+				var fakeFile = new File({ contents: createTextStream(['a', 'b', 'c']) });
 				var f = function (text) { return expected; };
 
 				var t = tf(f);
@@ -1027,7 +1037,7 @@ describe('gulp-simple-text', function () {
 			it('should convert a null result from f to an empty stream', function (done) {
 				var data = null;
 				var expected = '';
-				var fakeFile = new File({ contents: es.readArray(['a', 'b', 'c']) });
+				var fakeFile = new File({ contents: createTextStream(['a', 'b', 'c']) });
 				var f = function (text) { return data; };
 
 				var t = tf(f);
@@ -1047,7 +1057,7 @@ describe('gulp-simple-text', function () {
 			it('should convert an Object result from f to an empty stream', function (done) {
 				var data = { a: 1, b: 2 };
 				var expected = JSON.stringify(data, null, '  ');
-				var fakeFile = new File({ contents: es.readArray(['a', 'b', 'c']) });
+				var fakeFile = new File({ contents: createTextStream(['a', 'b', 'c']) });
 				var f = function (text) { return data; };
 
 				var t = tf(f);
@@ -1067,7 +1077,7 @@ describe('gulp-simple-text', function () {
 			it('should convert an Array result from f to an empty stream', function (done) {
 				var data = [1, 2, "a", "b"];
 				var expected = JSON.stringify(data, null, '  ');
-				var fakeFile = new File({ contents: es.readArray(['a', 'b', 'c']) });
+				var fakeFile = new File({ contents: createTextStream(['a', 'b', 'c']) });
 				var f = function (text) { return data; };
 
 				var t = tf(f);
