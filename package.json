@@ -1,6 +1,6 @@
 {
   "name": "gulp-text-simple",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "simple creation of Gulp transformations for text files",
   "main": "src/index.js",
   "files": [
