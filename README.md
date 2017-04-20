@@ -2,6 +2,7 @@ GulpText _simple_
 =================
 
 [![npm package][npm-img]][npm-url]
+[![dependency status][libraries-img]][libraries-url]
 [![build status][travis-img]][travis-url]
 
 > simple creation of [Gulp] transformations for text files
@@ -280,5 +281,7 @@ GulpText _simple_ is published under MIT license.
 [npm-img]: https://img.shields.io/npm/v/gulp-text-simple.svg
 [travis-img]: https://img.shields.io/travis/mastersign/gulp-text-simple/master.svg
 [travis-url]: https://travis-ci.org/mastersign/gulp-text-simple
+[libraries-url]: https://libraries.io/npm/gulp-text-simple
+[libraries-img]: https://img.shields.io/librariesio/github/mastersign/gulp-text-simple.svg
 [Gulp]: http://gulpjs.com
 [Buffer]: https://nodejs.org/api/buffer.html
