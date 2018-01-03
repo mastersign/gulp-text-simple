@@ -81,13 +81,20 @@ var textTransformation = function(f, defaultOptions) {
     var defOpts = _.assign({ sourceEncoding: null }, defaultOptions || { });
 
     /*
-     * factory() -> Gulp transformation with f(fileContent)
-     * factory("text") -> result of f("text")
+     * factory() -> Gulp transformation with f(fileContent, options)
+     * factory("text") -> result of f("text", options)
      * factory(options) -> Gulp transformation with f(fileContent, options)
      * factory("text", options) -> result of f("text", options)
-     * factory.readFileSync(path) -> result of f(fileContent)
-     * factory.readFileSync(path, options) -> result of f (fileContent, options)
+     * factory.readFile(path, cb) -> result of f(fileContent, options)
+     * factory.readFile(path, options, cb) -> result of f(fileContent, options)
+     * factory.readFileSync(path) -> result of f(fileContent, options)
+     * factory.readFileSync(path, options) -> result of f(fileContent, options)
+     * factory.transformFile(sourcePath, targetPath, cb) -> result of f(fileContent, options)
+     * factory.transformFile(sourcePath, targetPath, options, cb) -> result of f(fileContent, options)
+     * factory.transformFileSync(sourcePath, targetPath) -> result of f(fileContent, options)
+     * factory.transformFileSync(sourcePath, targetPath, options) -> result of f(fileContent, options)
      */
+    
     var factory = function () {
         var opts = undefined;
 
