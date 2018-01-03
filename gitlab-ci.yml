@@ -1,0 +1,23 @@
+image: node:alpine
+
+before_script:
+  - npm install
+
+test (NodeJS latest): &test-definition
+  stage: test
+  script:
+    - npm test
+  tags:
+    - docker
+
+test (NodeJS 8):
+  image: node:8-alpine
+  <<: *test-definition
+
+test (NodeJS 6):
+  image: node:6-alpine
+  <<: *test-definition
+
+test (NodeJS 4):
+  image: node:4-alpine
+  <<: *test-definition
