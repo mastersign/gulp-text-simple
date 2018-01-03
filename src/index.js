@@ -96,30 +96,34 @@ var textTransformation = function(f, defaultOptions) {
      */
     
     var factory = function () {
-        var opts = undefined;
+        var callOpts = undefined;
+        var mergedOpts = undefined;
 
         if (arguments.length === 0) {
             // transformation() -> Gulp transformation with f(fileContent)
         } else if (arguments.length === 1) {
             if (typeof(arguments[0]) === 'string') {
                 // transformation("string") -> f("string")
-                return f(arguments[0]);
+                mergedOpts = _.clone(defOpts);
+                return f(arguments[0], mergedOpts);
             } else {
                 // transformation(options) -> Gulp transformation with f(fileContent, options) 
-                opts = arguments[0];
+                callOpts = arguments[0];
             }
         } else if (arguments.length > 1) {
             // transformation("string", options) -> f("string", options)
-            return f(arguments[0], arguments[1]);
+            callOpts = arguments[1];
+            mergedOpts = _.assign(_.clone(defOpts), callOpts);
+            return f(arguments[0], mergedOpts);
         }
 
-        opts = _.assign(defOpts, opts || { });
+        mergedOpts = _.assign(_.clone(defOpts), callOpts || { });
 
         var buildOptions = function (file) {
-            if (typeof(opts) === 'object') {
-                return file.path ? _.assign({ sourcePath: file.path }, opts) : opts;
+            if (typeof(mergedOpts) === 'object') {
+                return file.path ? _.assign({ sourcePath: file.path }, mergedOpts) : mergedOpts;
             } else {
-                return opts;
+                return mergedOpts;
             }
         };
 
