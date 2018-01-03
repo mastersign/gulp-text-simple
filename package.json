@@ -35,7 +35,7 @@
   "devDependencies": {
     "del": "^2.2.0",
     "event-stream": "^3.3.0",
-    "mocha": "^4.1.0",
+    "mocha": "^3.5.3",
     "vinyl": "^2.0.0"
   }
 }
