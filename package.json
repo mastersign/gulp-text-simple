@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "async": "^2.6.0",
-    "del": "^3.0.0",
+    "del": "^2.2.0",
     "event-stream": "^3.3.0",
     "mocha": "^3.5.3",
     "vinyl": "^2.0.0"
