@@ -102,7 +102,7 @@ describe('gulp-simple-text', function () {
 			var f = function () { return expected; };
 			var t = tf(f);
 			var result = t("something");
-			assert(expected === result, 'did not return the result of f');
+			assert.strictEqual(expected, result, 'did not return the result of f');
 		});
 
 	});
@@ -154,12 +154,14 @@ describe('gulp-simple-text', function () {
 
 			it('should pass options to the transformation function', function () {
 				var sourcePath = 'test/data/sample.txt';
-				var input = { a: 1 };
+				var expected = { a: 1 };
 				var result = undefined;
 				var f = function (text, options) { result = options; };
 				var t = tf(f);
-				t.readFileSync(sourcePath, input);
-				assert.deepEqual(result.a, input.a, 'did not pass the options to f');
+				t.readFileSync(sourcePath, expected);
+				assert.deepStrictEqual(
+					pickByTemplate(result, expected), expected,
+					'did not pass the options to f');
 			});
 
 			it('should pass individual options, when called multiple times', function () {
@@ -190,7 +192,7 @@ describe('gulp-simple-text', function () {
 				var f = function () { return expected; };
 				var t = tf(f);
 				var result = t.readFileSync(sourcePath);
-				assert(result === expected, 'did not pass the result of f');
+				assert.strictEqual(result, expected, 'did not pass the result of f');
 			});
 
 			it('should respect the sourceEncoding default option', function () {
@@ -310,12 +312,14 @@ describe('gulp-simple-text', function () {
 
 			it('should pass options to the transformation function', function (done) {
 				var sourcePath = 'test/data/sample.txt';
-				var input = { a: 1 };
+				var expected = { a: 1 };
 				var result = undefined;
 				var f = function (text, options) { result = options; };
 				var t = tf(f);
-				t.readFile(sourcePath, input, function (err, data) {
-					assert.deepEqual(result.a, input.a, 'did not pass the options to f');
+				t.readFile(sourcePath, expected, function (err, data) {
+					assert.deepStrictEqual(
+						pickByTemplate(result, expected), expected,
+						'did not pass the options to f');
 					done();
 				});
 			});
@@ -364,7 +368,7 @@ describe('gulp-simple-text', function () {
 				var f = function () { return expected; };
 				var t = tf(f);
 				t.readFile(sourcePath, function (err, data) {
-					assert(data === expected, 'did not pass the result of f');
+					assert.strictEqual(data, expected, 'did not pass the result of f');
 					done();
 				});
 			});
@@ -399,7 +403,7 @@ describe('gulp-simple-text', function () {
 				var f = function () { throw expected; };
 				var t = tf(f);
 				t.readFile(sourcePath, function (err, data) {
-					assert(err === expected, 'did not pass the error from f');
+					assert.strictEqual(err, expected, 'did not pass the error from f');
 					done();
 				});
 			});
@@ -505,12 +509,14 @@ describe('gulp-simple-text', function () {
 			it('should pass options to the transformation function', function () {
 				var sourcePath = 'test/data/sample.txt';
 				var targetPath = 'tmp/sample.txt';
-				var input = { a: 1 };
+				var expected = { a: 1 };
 				var result = undefined;
 				var f = function (text, options) { result = options; };
 				var t = tf(f);
-				t.transformFileSync(sourcePath, targetPath, input);
-				assert.deepEqual(result.a, input.a, 'did not pass the options to f');
+				t.transformFileSync(sourcePath, targetPath, expected);
+				assert.deepStrictEqual(
+					pickByTemplate(result, expected), expected,
+					'did not pass the options to f');
 			});
 
 			it('should pass individual options, when called multiple times', function () {
@@ -728,12 +734,14 @@ describe('gulp-simple-text', function () {
 			it('should pass options to the transformation function', function (done) {
 				var sourcePath = 'test/data/sample.txt';
 				var targetPath = 'tmp/sample.txt';
-				var input = { a: 1 };
+				var expected = { a: 1 };
 				var result = undefined;
 				var f = function (text, options) { result = options; };
 				var t = tf(f);
-				t.transformFile(sourcePath, targetPath, input, function (err) {
-					assert.deepEqual(result.a, input.a, 'did not pass the options to f');
+				t.transformFile(sourcePath, targetPath, expected, function (err) {
+					assert.deepStrictEqual(
+						pickByTemplate(result, expected), expected,
+						'did not pass the options to f');
 					done();
 				});
 			});
@@ -849,7 +857,7 @@ describe('gulp-simple-text', function () {
 				var f = function () { throw expected; };
 				var t = tf(f);
 				t.transformFile(sourcePath, targetPath, function (err) {
-					assert(err === expected, 'did not pass the error from f');
+					assert.strictEqual(err, expected, 'did not pass the error from f');
 					done();
 				});
 			});
@@ -928,7 +936,7 @@ describe('gulp-simple-text', function () {
 				gt.write(fakeFile);
 				gt.once('data', function (file) {
 					assert(file.isNull(), 'passed file is not a null file');
-					assert(file === fakeFile, 'file was not passed unchanged');
+					assert.strictEqual(file, fakeFile, 'file was not passed unchanged');
 					done();
 				});
 			});
