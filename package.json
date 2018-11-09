@@ -29,14 +29,14 @@
   "homepage": "https://github.com/mastersign/gulp-text-simple#readme",
   "dependencies": {
     "lodash": "^4.0.0",
-    "readable-stream": "^2.2.0",
-    "through2": "^2.0.0"
+    "readable-stream": "^3.0.0",
+    "through2": "^3.0.0"
   },
   "devDependencies": {
     "async": "^2.6.0",
     "del": "^3.0.0",
-    "event-stream": "^3.3.0",
-    "mocha": "^4.0.0",
-    "vinyl": "^2.0.0"
+    "event-stream": "^4.0.0",
+    "mocha": "^5.2.0",
+    "vinyl": "^2.2.0"
   }
 }
