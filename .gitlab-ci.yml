@@ -1,7 +1,7 @@
 image: node:alpine
 
 before_script:
-  - npm install
+  - yarn install
 
 test (NodeJS latest): &test-definition
   stage: test
