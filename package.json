@@ -28,15 +28,15 @@
   },
   "homepage": "https://github.com/mastersign/gulp-text-simple#readme",
   "dependencies": {
-    "lodash": "^4.0.0",
-    "readable-stream": "^2.2.0",
-    "through2": "^2.0.0"
+    "lodash": "^4.17.11",
+    "readable-stream": "^2.3.6",
+    "through2": "^3.0.0"
   },
   "devDependencies": {
-    "async": "^2.6.0",
+    "async": "^2.6.1",
     "del": "^3.0.0",
-    "event-stream": "^3.3.0",
-    "mocha": "^4.0.0",
-    "vinyl": "^2.0.0"
+    "event-stream": "^3.3.6",
+    "mocha": "^5.2.0",
+    "vinyl": "^2.2.0"
   }
 }
