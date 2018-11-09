@@ -21,7 +21,3 @@ test (NodeJS 8):
 test (NodeJS 6):
   image: node:6-alpine
   <<: *test-definition
-
-test (NodeJS 4):
-  image: node:4-alpine
-  <<: *test-definition
