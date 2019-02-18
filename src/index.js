@@ -22,7 +22,7 @@ var processBuffer = function (buffer, f, opts) {
     var trgEnc = opts.targetEncoding || 'utf8';
     var src = buffer.toString(srcEnc);
     var result = f(src, opts);
-    return new Buffer(safeTransformResult(result), trgEnc);
+    return Buffer.from(safeTransformResult(result), trgEnc);
 };
 
 var TransformStream = function (f, opts, streamOptions) {
@@ -49,7 +49,7 @@ TransformStream.prototype._flush = function (cb) {
         cb();
         return;
     }
-    this.push(new Buffer(safeTransformResult(result), trgEnc));
+    this.push(Buffer.from(safeTransformResult(result), trgEnc));
     cb();
 };
 

@@ -946,7 +946,7 @@ describe('gulp-simple-text', function () {
 		describe('in buffer mode', function () {
 
 			it('should call the transformation function once', function (done) {
-				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
+				var fakeFile = new File({ contents: Buffer.from("abc", 'utf-8') });
 				var called = 0;
 				var f = function () { called++; return "xyz"; };
 
@@ -963,7 +963,7 @@ describe('gulp-simple-text', function () {
 			it('should pass the input to the transformation function', function (done) {
 				var expected = "input text";
 				var result = null;
-				var fakeFile = new File({ contents: new Buffer(expected, 'utf-8') });
+				var fakeFile = new File({ contents: Buffer.from(expected, 'utf-8') });
 				var f = function (text) { result = text; return "xyz"; };
 
 				var t = tf(f);
@@ -979,7 +979,7 @@ describe('gulp-simple-text', function () {
 			it('should pass default options to the transformation function', function (done) {
 				var expected = { a: 1 };
 				var result = null;
-				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
+				var fakeFile = new File({ contents: Buffer.from("abc", 'utf-8') });
 				var f = function (text, options) { result = options; return "xyz"; };
 
 				var t = tf(f, expected);
@@ -997,7 +997,7 @@ describe('gulp-simple-text', function () {
 			it('should pass options to the transformation function', function (done) {
 				var expected = { a: 1 };
 				var result = null;
-				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
+				var fakeFile = new File({ contents: Buffer.from("abc", 'utf-8') });
 				var f = function (text, options) { result = options; return "xyz"; };
 
 				var t = tf(f);
@@ -1017,7 +1017,7 @@ describe('gulp-simple-text', function () {
 				var expected2 = { a: 2, b: 0 };
 				var expected3 = { a: 3, b: 0 }
 				var result = null;
-				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
+				var fakeFile = new File({ contents: Buffer.from("abc", 'utf-8') });
 				var f = function (text, options) { result = options; return "xyz"; };
 
 				var t = tf(f, { a: 3, b: 0 });
@@ -1061,7 +1061,7 @@ describe('gulp-simple-text', function () {
 				var filePath = path.normalize('abc/file.txt');
 				var result = null;
 				var fakeFile = new File({
-					contents: new Buffer("abc", 'utf-8'),
+					contents: Buffer.from("abc", 'utf-8'),
 					path: filePath
 				});
 				var f = function (text, options) { result = options; return "xyz"; };
@@ -1078,7 +1078,7 @@ describe('gulp-simple-text', function () {
 
 			it('should pass a buffer file with the result of f', function (done) {
 				var expected = "xyz";
-				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
+				var fakeFile = new File({ contents: Buffer.from("abc", 'utf-8') });
 				var f = function () { return expected; };
 
 				var t = tf(f);
@@ -1096,7 +1096,7 @@ describe('gulp-simple-text', function () {
 			it('should convert a null result from f into an empty file', function (done) {
 				var data = null;
 				var expected = '';
-				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
+				var fakeFile = new File({ contents: Buffer.from("abc", 'utf-8') });
 				var f = function () { return data; };
 
 				var t = tf(f);
@@ -1114,7 +1114,7 @@ describe('gulp-simple-text', function () {
 			it('should convert an object result from f into a JSON string', function (done) {
 				var data = { a: 1, b: 2 };
 				var expected = JSON.stringify(data, null, '  ');
-				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
+				var fakeFile = new File({ contents: Buffer.from("abc", 'utf-8') });
 				var f = function () { return data; };
 
 				var t = tf(f);
@@ -1132,7 +1132,7 @@ describe('gulp-simple-text', function () {
 			it('should convert an Array result from f into a JSON string', function (done) {
 				var data = [1, 2, "a", "b"];
 				var expected = JSON.stringify(data, null, '  ');
-				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
+				var fakeFile = new File({ contents: Buffer.from("abc", 'utf-8') });
 				var f = function () { return data; };
 
 				var t = tf(f);
@@ -1183,7 +1183,7 @@ describe('gulp-simple-text', function () {
 
 			it('should respect the targetEncoding default option', function (done) {
 				var expected = fs.readFileSync('test/data/german-utf-8.txt', 'utf8');
-				var fakeFile = new File({ contents: new Buffer('abc', 'utf8') });
+				var fakeFile = new File({ contents: Buffer.from('abc', 'utf8') });
 				var f = function (text) { return expected; };
 
 				var t = tf(f, { targetEncoding: 'utf16le' });
@@ -1199,7 +1199,7 @@ describe('gulp-simple-text', function () {
 
 			it('should respect the targetEncoding option', function (done) {
 				var expected = fs.readFileSync('test/data/german-utf-8.txt', 'utf8');
-				var fakeFile = new File({ contents: new Buffer('abc', 'utf8') });
+				var fakeFile = new File({ contents: Buffer.from('abc', 'utf8') });
 				var f = function (text) { return expected; };
 
 				var t = tf(f);
