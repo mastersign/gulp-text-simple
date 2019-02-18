@@ -13,7 +13,7 @@ var tf = require('../src/index.js');
 
 function pickProps(object, propertyNames) {
 	return _.pickBy(object, function (value, key) {
-		return _.includes(propertyNames, key); 
+		return _.includes(propertyNames, key);
 	});
 }
 
@@ -36,7 +36,7 @@ describe('gulp-simple-text', function () {
 
 		it('should pass the input text to the transformation function', function () {
 			var expected = "text";
-			var result = undefined;
+			var result = null;
 			var f = function (text) { result = text; };
 			var t = tf(f);
 			t(expected);
@@ -45,7 +45,7 @@ describe('gulp-simple-text', function () {
 
 		it('should pass default options to the transformation function', function () {
 			var expected = { a: 1 };
-			var result = undefined;
+			var result = null;
 			var f = function (text, options) { result = options; };
 			var t = tf(f, expected);
 			t("something");
@@ -56,7 +56,7 @@ describe('gulp-simple-text', function () {
 
 		it('should pass options to the transformation function', function () {
 			var expected = { a: 1 };
-			var result = undefined;
+			var result = null;
 			var f = function (text, options) { result = options; };
 			var t = tf(f);
 			t("something", expected);
@@ -67,7 +67,7 @@ describe('gulp-simple-text', function () {
 
 		it('should merge options with default options', function () {
 			var expected = { a: 1, b: 2 };
-			var result = undefined;
+			var result = null;
 			var f = function (text, options) { result = options; };
 			var t = tf(f, { a: 1 });
 			t("something", { b: 2 });
@@ -80,7 +80,7 @@ describe('gulp-simple-text', function () {
 			var expected1 = { a: 1, b: 0 };
 			var expected2 = { a: 2, b: 0 };
 			var expected3 = { a: 3, b: 0 }
-			var result = undefined;
+			var result = null;
 			var f = function (text, options) { result = options; };
 			var t = tf(f, { a: 3, b: 0 });
 			t("something", { a: 1 });
@@ -123,7 +123,7 @@ describe('gulp-simple-text', function () {
 			it('should read the file and pass it to the transformation function', function () {
 				var sourcePath = 'test/data/sample.txt';
 				var expected = fs.readFileSync(sourcePath, 'utf-8');
-				var result = undefined;
+				var result = null;
 				var f = function (text) { result = text; };
 				var t = tf(f);
 				t.readFileSync(sourcePath);
@@ -133,7 +133,7 @@ describe('gulp-simple-text', function () {
 			it('should pass the source path to the transformation function', function () {
 				var sourcePath = 'test/data/sample.txt';
 				var expected = path.resolve(sourcePath);
-				var result = undefined;
+				var result = null;
 				var f = function (text, options) { result = options; };
 				var t = tf(f);
 				t.readFileSync(sourcePath);
@@ -143,7 +143,7 @@ describe('gulp-simple-text', function () {
 			it('should pass default options to the transformation function', function () {
 				var sourcePath = 'test/data/sample.txt';
 				var expected = { a: 1 };
-				var result = undefined;
+				var result = null;
 				var f = function (text, options) { result = options; };
 				var t = tf(f, expected);
 				t.readFileSync(sourcePath);
@@ -155,7 +155,7 @@ describe('gulp-simple-text', function () {
 			it('should pass options to the transformation function', function () {
 				var sourcePath = 'test/data/sample.txt';
 				var expected = { a: 1 };
-				var result = undefined;
+				var result = null;
 				var f = function (text, options) { result = options; };
 				var t = tf(f);
 				t.readFileSync(sourcePath, expected);
@@ -169,7 +169,7 @@ describe('gulp-simple-text', function () {
 				var expected1 = { a: 1, b: 0 };
 				var expected2 = { a: 2, b: 0 };
 				var expected3 = { a: 3, b: 0 }
-				var result = undefined;
+				var result = null;
 				var f = function (text, options) { result = options; };
 				var t = tf(f, { a: 3, b: 0 });
 				t.readFileSync(sourcePath, { a: 1 });
@@ -198,7 +198,7 @@ describe('gulp-simple-text', function () {
 			it('should respect the sourceEncoding default option', function () {
 				var sourcePath = 'test/data/german-utf-16-le.txt';
 				var expected = fs.readFileSync(sourcePath, 'utf16le');
-				var result = undefined;
+				var result = null;
 				var f = function (text) { result = text; }
 				var t = tf(f, { sourceEncoding: 'utf16le' });
 				t.readFileSync(sourcePath);
@@ -208,7 +208,7 @@ describe('gulp-simple-text', function () {
 			it('should respect the sourceEncoding option', function () {
 				var sourcePath = 'test/data/german-utf-16-le.txt';
 				var expected = fs.readFileSync(sourcePath, 'utf16le');
-				var result = undefined;
+				var result = null;
 				var f = function (text) { result = text; }
 				var t = tf(f);
 				t.readFileSync(sourcePath, { sourceEncoding: 'utf16le' });
@@ -275,7 +275,7 @@ describe('gulp-simple-text', function () {
 			it('should read the file and pass it to the transformation function', function (done) {
 				var sourcePath = 'test/data/sample.txt';
 				var expected = fs.readFileSync(sourcePath, 'utf-8');
-				var result = undefined;
+				var result = null;
 				var f = function (text) { result = text; };
 				var t = tf(f);
 				t.readFile(sourcePath, function (err, data) {
@@ -287,7 +287,7 @@ describe('gulp-simple-text', function () {
 			it('should pass the source path to the transformation function', function (done) {
 				var sourcePath = 'test/data/sample.txt';
 				var expected = path.resolve(sourcePath);
-				var result = undefined;
+				var result = null;
 				var f = function (text, options) { result = options; };
 				var t = tf(f);
 				t.readFile(sourcePath, function (err, data) {
@@ -299,7 +299,7 @@ describe('gulp-simple-text', function () {
 			it('should pass default options to the transformation function', function (done) {
 				var sourcePath = 'test/data/sample.txt';
 				var expected = { a: 1 };
-				var result = undefined;
+				var result = null;
 				var f = function (text, options) { result = options; };
 				var t = tf(f, expected);
 				t.readFile(sourcePath, function (err, data) {
@@ -313,7 +313,7 @@ describe('gulp-simple-text', function () {
 			it('should pass options to the transformation function', function (done) {
 				var sourcePath = 'test/data/sample.txt';
 				var expected = { a: 1 };
-				var result = undefined;
+				var result = null;
 				var f = function (text, options) { result = options; };
 				var t = tf(f);
 				t.readFile(sourcePath, expected, function (err, data) {
@@ -329,7 +329,7 @@ describe('gulp-simple-text', function () {
 				var expected1 = { a: 1, b: 0 };
 				var expected2 = { a: 2, b: 0 };
 				var expected3 = { a: 3, b: 0 }
-				var result = undefined;
+				var result = null;
 				var f = function (text, options) { result = options; };
 				var t = tf(f, { a: 3, b: 0 });
 
@@ -376,7 +376,7 @@ describe('gulp-simple-text', function () {
 			it('should respect the sourceEncoding default option', function (done) {
 				var sourcePath = 'test/data/german-utf-16-le.txt';
 				var expected = fs.readFileSync(sourcePath, 'utf16le');
-				var result = undefined;
+				var result = null;
 				var f = function (text) { result = text; }
 				var t = tf(f, { sourceEncoding: 'utf16le' });
 				t.readFile(sourcePath, function (err, data) {
@@ -388,7 +388,7 @@ describe('gulp-simple-text', function () {
 			it('should respect the sourceEncoding option', function (done) {
 				var sourcePath = 'test/data/german-utf-16-le.txt';
 				var expected = fs.readFileSync(sourcePath, 'utf16le');
-				var result = undefined;
+				var result = null;
 				var f = function (text) { result = text; }
 				var t = tf(f);
 				t.readFile(sourcePath, { sourceEncoding: 'utf16le' }, function (err, data) {
@@ -475,7 +475,7 @@ describe('gulp-simple-text', function () {
 				var sourcePath = 'test/data/sample.txt';
 				var targetPath = 'tmp/sample.txt';
 				var expected = fs.readFileSync(sourcePath, 'utf-8');
-				var result = undefined;
+				var result = null;
 				var f = function (text) { result = text; };
 				var t = tf(f);
 				t.transformFileSync(sourcePath, targetPath);
@@ -486,7 +486,7 @@ describe('gulp-simple-text', function () {
 				var sourcePath = 'test/data/sample.txt';
 				var targetPath = 'tmp/sample.txt';
 				var expected = path.resolve(sourcePath);
-				var result = undefined;
+				var result = null;
 				var f = function (text, options) { result = options; };
 				var t = tf(f);
 				t.transformFileSync(sourcePath, targetPath);
@@ -497,7 +497,7 @@ describe('gulp-simple-text', function () {
 				var sourcePath = 'test/data/sample.txt';
 				var targetPath = 'tmp/sample.txt';
 				var expected = { a: 1 };
-				var result = undefined;
+				var result = null;
 				var f = function (text, options) { result = options; };
 				var t = tf(f, expected);
 				t.transformFileSync(sourcePath, targetPath);
@@ -510,7 +510,7 @@ describe('gulp-simple-text', function () {
 				var sourcePath = 'test/data/sample.txt';
 				var targetPath = 'tmp/sample.txt';
 				var expected = { a: 1 };
-				var result = undefined;
+				var result = null;
 				var f = function (text, options) { result = options; };
 				var t = tf(f);
 				t.transformFileSync(sourcePath, targetPath, expected);
@@ -525,7 +525,7 @@ describe('gulp-simple-text', function () {
 				var expected1 = { a: 1, b: 0 };
 				var expected2 = { a: 2, b: 0 };
 				var expected3 = { a: 3, b: 0 }
-				var result = undefined;
+				var result = null;
 				var f = function (text, options) { result = options; };
 				var t = tf(f, { a: 3, b: 0 });
 				t.transformFileSync(sourcePath, targetPath, { a: 1 });
@@ -557,7 +557,7 @@ describe('gulp-simple-text', function () {
 				var sourcePath = 'test/data/german-utf-16-le.txt';
 				var targetPath = 'tmp/sample.txt';
 				var expected = fs.readFileSync(sourcePath, 'utf16le');
-				var result = undefined;
+				var result = null;
 				var f = function (text) { result = text; }
 				var t = tf(f, { sourceEncoding: 'utf16le' });
 				t.transformFileSync(sourcePath, targetPath);
@@ -568,7 +568,7 @@ describe('gulp-simple-text', function () {
 				var sourcePath = 'test/data/german-utf-16-le.txt';
 				var targetPath = 'tmp/sample.txt';
 				var expected = fs.readFileSync(sourcePath, 'utf16le');
-				var result = undefined;
+				var result = null;
 				var f = function (text) { result = text; }
 				var t = tf(f);
 				t.transformFileSync(sourcePath, targetPath, { sourceEncoding: 'utf16le' });
@@ -694,7 +694,7 @@ describe('gulp-simple-text', function () {
 				var sourcePath = 'test/data/sample.txt';
 				var targetPath = 'tmp/sample.txt';
 				var expected = fs.readFileSync(sourcePath, 'utf-8');
-				var result = undefined;
+				var result = null;
 				var f = function (text) { result = text; };
 				var t = tf(f);
 				t.transformFile(sourcePath, targetPath, function (err) {
@@ -707,7 +707,7 @@ describe('gulp-simple-text', function () {
 				var sourcePath = 'test/data/sample.txt';
 				var targetPath = 'tmp/sample.txt';
 				var expected = path.resolve(sourcePath);
-				var result = undefined;
+				var result = null;
 				var f = function (text, options) { result = options; };
 				var t = tf(f);
 				t.transformFile(sourcePath, targetPath, function (err) {
@@ -720,7 +720,7 @@ describe('gulp-simple-text', function () {
 				var sourcePath = 'test/data/sample.txt';
 				var targetPath = 'tmp/sample.txt';
 				var expected = { a: 1 };
-				var result = undefined;
+				var result = null;
 				var f = function (text, options) { result = options; };
 				var t = tf(f, expected);
 				t.transformFile(sourcePath, targetPath, function (err) {
@@ -735,7 +735,7 @@ describe('gulp-simple-text', function () {
 				var sourcePath = 'test/data/sample.txt';
 				var targetPath = 'tmp/sample.txt';
 				var expected = { a: 1 };
-				var result = undefined;
+				var result = null;
 				var f = function (text, options) { result = options; };
 				var t = tf(f);
 				t.transformFile(sourcePath, targetPath, expected, function (err) {
@@ -752,7 +752,7 @@ describe('gulp-simple-text', function () {
 				var expected1 = { a: 1, b: 0 };
 				var expected2 = { a: 2, b: 0 };
 				var expected3 = { a: 3, b: 0 }
-				var result = undefined;
+				var result = null;
 				var f = function (text, options) { result = options; };
 				var t = tf(f, { a: 3, b: 0 });
 
@@ -802,7 +802,7 @@ describe('gulp-simple-text', function () {
 				var sourcePath = 'test/data/german-utf-16-le.txt';
 				var targetPath = 'tmp/sample.txt';
 				var expected = fs.readFileSync(sourcePath, 'utf16le');
-				var result = undefined;
+				var result = null;
 				var f = function (text) { result = text; }
 				var t = tf(f, { sourceEncoding: 'utf16le' });
 				t.transformFile(sourcePath, targetPath, function (err) {
@@ -815,7 +815,7 @@ describe('gulp-simple-text', function () {
 				var sourcePath = 'test/data/german-utf-16-le.txt';
 				var targetPath = 'tmp/sample.txt';
 				var expected = fs.readFileSync(sourcePath, 'utf16le');
-				var result = undefined;
+				var result = null;
 				var f = function (text) { result = text; }
 				var t = tf(f);
 				t.transformFile(sourcePath, targetPath, { sourceEncoding: 'utf16le' }, function (err) {
@@ -915,12 +915,12 @@ describe('gulp-simple-text', function () {
 				var fakeFile = new File({ contents: null });
 				var called = false;
 				var f = function () { called = true; };
-				
+
 				var t = tf(f);
 				var gt = t();
-				
+
 				gt.write(fakeFile);
-				
+
 				gt.once('data', function (file) {
 					assert(!called, 'called transformation function');
 					done();
@@ -932,7 +932,7 @@ describe('gulp-simple-text', function () {
 
 				var t = tf(function () {});
 				var gt = t();
-				
+
 				gt.write(fakeFile);
 				gt.once('data', function (file) {
 					assert(file.isNull(), 'passed file is not a null file');
@@ -944,7 +944,7 @@ describe('gulp-simple-text', function () {
 		});
 
 		describe('in buffer mode', function () {
-			
+
 			it('should call the transformation function once', function (done) {
 				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
 				var called = 0;
@@ -962,7 +962,7 @@ describe('gulp-simple-text', function () {
 
 			it('should pass the input to the transformation function', function (done) {
 				var expected = "input text";
-				var result = undefined;
+				var result = null;
 				var fakeFile = new File({ contents: new Buffer(expected, 'utf-8') });
 				var f = function (text) { result = text; return "xyz"; };
 
@@ -978,7 +978,7 @@ describe('gulp-simple-text', function () {
 
 			it('should pass default options to the transformation function', function (done) {
 				var expected = { a: 1 };
-				var result = undefined;
+				var result = null;
 				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
 				var f = function (text, options) { result = options; return "xyz"; };
 
@@ -996,7 +996,7 @@ describe('gulp-simple-text', function () {
 
 			it('should pass options to the transformation function', function (done) {
 				var expected = { a: 1 };
-				var result = undefined;
+				var result = null;
 				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
 				var f = function (text, options) { result = options; return "xyz"; };
 
@@ -1016,7 +1016,7 @@ describe('gulp-simple-text', function () {
 				var expected1 = { a: 1, b: 0 };
 				var expected2 = { a: 2, b: 0 };
 				var expected3 = { a: 3, b: 0 }
-				var result = undefined;
+				var result = null;
 				var fakeFile = new File({ contents: new Buffer("abc", 'utf-8') });
 				var f = function (text, options) { result = options; return "xyz"; };
 
@@ -1059,10 +1059,10 @@ describe('gulp-simple-text', function () {
 
 			it('should pass the sourcePath to the transformation function', function (done) {
 				var filePath = path.normalize('abc/file.txt');
-				var result = undefined;
-				var fakeFile = new File({ 
+				var result = null;
+				var fakeFile = new File({
 					contents: new Buffer("abc", 'utf-8'),
-					path: filePath 
+					path: filePath
 				});
 				var f = function (text, options) { result = options; return "xyz"; };
 
@@ -1151,7 +1151,7 @@ describe('gulp-simple-text', function () {
 				var data = fs.readFileSync('test/data/german-utf-16-le.txt');
 				var expected = fs.readFileSync('test/data/german-utf-16-le.txt', 'utf16le');
 				var fakeFile = new File({ contents: data });
-				var result = undefined;
+				var result = null;
 				var f = function (text) { result = text; };
 
 				var t = tf(f, { sourceEncoding: 'utf16le' });
@@ -1168,7 +1168,7 @@ describe('gulp-simple-text', function () {
 				var data = fs.readFileSync('test/data/german-utf-16-le.txt');
 				var expected = fs.readFileSync('test/data/german-utf-16-le.txt', 'utf16le');
 				var fakeFile = new File({ contents: data });
-				var result = undefined;
+				var result = null;
 				var f = function (text) { result = text; };
 
 				var t = tf(f);
@@ -1263,7 +1263,7 @@ describe('gulp-simple-text', function () {
 
 			it('should pass the input to the transformation function', function (done) {
 				var expected = "input \ntext\n";
-				var result = undefined;
+				var result = null;
 				var fakeFile = new File({ contents: createTextStream(['input', ' ', "\n", "text\n"]) });
 				var f = function (text) { result = text; return "xyz"; };
 
@@ -1282,8 +1282,8 @@ describe('gulp-simple-text', function () {
 
 			it('should pass the sourcePath to the transformation function', function (done) {
 				var filePath = path.normalize('abc/file.txt');
-				var result = undefined;
-				var fakeFile = new File({ 
+				var result = null;
+				var fakeFile = new File({
 					contents: createTextStream(['a', 'b', 'c']),
 					path: filePath
 				});
@@ -1304,7 +1304,7 @@ describe('gulp-simple-text', function () {
 
 			it('should pass default options to the transformation function', function (done) {
 				var expected = { a: 1 };
-				var result = undefined;
+				var result = null;
 				var fakeFile = new File({ contents: createTextStream(['a', 'b', 'c']) });
 				var f = function (text, options) { result = options; return "xyz"; };
 
@@ -1325,7 +1325,7 @@ describe('gulp-simple-text', function () {
 
 			it('should pass options to the transformation function', function (done) {
 				var expected = { a: 1 };
-				var result = undefined;
+				var result = null;
 				var fakeFile = new File({ contents: createTextStream(['a', 'b', 'c']) });
 				var f = function (text, options) { result = options; return "xyz"; };
 
@@ -1348,7 +1348,7 @@ describe('gulp-simple-text', function () {
 				var expected1 = { a: 1, b: 0 };
 				var expected2 = { a: 2, b: 0 };
 				var expected3 = { a: 3, b: 0 }
-				var result = undefined;
+				var result = null;
 				var fakeFile = new File({ contents: createTextStream(['a', 'b', 'c']) });
 				var f = function (text, options) { result = options; return "xyz"; };
 
@@ -1481,7 +1481,7 @@ describe('gulp-simple-text', function () {
 				var expected = fs.readFileSync('test/data/german-utf-16-le.txt', 'utf16le');
 				var s = fs.createReadStream('test/data/german-utf-16-le.txt');
 				var fakeFile = new File({ contents: s });
-				var result = undefined;
+				var result = null;
 				var f = function (text) { result = text; return text; };
 
 				var t = tf(f, { sourceEncoding: 'utf16le' });
@@ -1492,7 +1492,7 @@ describe('gulp-simple-text', function () {
 					assert(file.isStream(), 'did not pass a stream object');
 					file.contents.pipe(es.wait(function (err, data) {
 						assert.equal(result, expected, 'did not respect source encoding');
-						done(); 
+						done();
 					}));
 				});
 			});
@@ -1501,7 +1501,7 @@ describe('gulp-simple-text', function () {
 				var expected = fs.readFileSync('test/data/german-utf-16-le.txt', 'utf16le');
 				var s = fs.createReadStream('test/data/german-utf-16-le.txt');
 				var fakeFile = new File({ contents: s });
-				var result = undefined;
+				var result = null;
 				var f = function (text) { result = text; return text; };
 
 				var t = tf(f);
@@ -1512,7 +1512,7 @@ describe('gulp-simple-text', function () {
 					assert(file.isStream(), 'did not pass a stream object');
 					file.contents.pipe(es.wait(function (err, data) {
 						assert.equal(result, expected, 'did not respect source encoding');
-						done(); 
+						done();
 					}));
 				});
 			});
@@ -1532,7 +1532,7 @@ describe('gulp-simple-text', function () {
 					file.contents.pipe(es.wait(function (err, data) {
 						var result = data.toString('utf16le');
 						assert.equal(result, expected, 'did not respect target encoding');
-						done(); 
+						done();
 					}));
 				});
 			});
@@ -1552,7 +1552,7 @@ describe('gulp-simple-text', function () {
 					file.contents.pipe(es.wait(function (err, data) {
 						var result = data.toString('utf16le');
 						assert.equal(result, expected, 'did not respect target encoding');
-						done(); 
+						done();
 					}));
 				});
 			});
