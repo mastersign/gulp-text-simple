@@ -58,7 +58,7 @@ TransformStream.prototype._flush = function (cb) {
  * by passing a text transformation function f.
  * The text transformation function f takes a string as first argument
  * and optionally a second argument for options.
- * 
+ *
  * If the returned factory function is called with no arguments or
  * optionally with one non-string argument, it returns a Gulp transformation,
  * which forwards the optional second argument to the text transformation
@@ -67,14 +67,14 @@ TransformStream.prototype._flush = function (cb) {
  * If the returned factory function is called with a string and
  * optionally a second non-string argument it behaves like the
  * text transformation function f.
- * 
+ *
  * If the text transformation function returns a falsy value,
  * the Gulp transformation yields an empty file.
  * If the text transformation function f does not return a string,
  * the Gulp transformation serializes the result with JSON.stringify().
- * 
+ *
  * @param {function} f - A transformation function from string to string
- * @param {map} defaultOptions - (optional) A predefined options map for factory. 
+ * @param {map} defaultOptions - (optional) A predefined options map for factory.
  */
 var textTransformation = function(f, defaultOptions) {
 
@@ -94,7 +94,7 @@ var textTransformation = function(f, defaultOptions) {
      * factory.transformFileSync(sourcePath, targetPath) -> result of f(fileContent, options)
      * factory.transformFileSync(sourcePath, targetPath, options) -> result of f(fileContent, options)
      */
-    
+
     var factory = function () {
         var callOpts = undefined;
         var mergedOpts = undefined;
@@ -107,7 +107,7 @@ var textTransformation = function(f, defaultOptions) {
                 mergedOpts = _.clone(defOpts);
                 return f(arguments[0], mergedOpts);
             } else {
-                // transformation(options) -> Gulp transformation with f(fileContent, options) 
+                // transformation(options) -> Gulp transformation with f(fileContent, options)
                 callOpts = arguments[0];
             }
         } else if (arguments.length > 1) {
@@ -154,9 +154,9 @@ var textTransformation = function(f, defaultOptions) {
             }
         });
     };
-    
+
     var buildOpts = function (options, filePath) {
-        var localOpts = { sourcePath: path.resolve(filePath) }; 
+        var localOpts = { sourcePath: path.resolve(filePath) };
         return _.assign(localOpts, defOpts, options || { });
     };
 
@@ -187,7 +187,7 @@ var textTransformation = function(f, defaultOptions) {
             cb(error, result);
         });
     };
-    
+
     factory.transformFileSync = function (sourceFilePath, targetFilePath, options) {
         options = buildOpts(options, sourceFilePath);
         var srcEnc = options.sourceEncoding || 'utf8';
@@ -196,7 +196,7 @@ var textTransformation = function(f, defaultOptions) {
         var result = f(text, options);
         fs.writeFileSync(targetFilePath, result, trgEnc);
     };
-    
+
     factory.transformFile = function (sourceFilePath, targetFilePath) {
         var options = arguments.length > 3 ? arguments[2] : null;
         var cb = arguments.length > 3 ? arguments[3] : arguments[2];
