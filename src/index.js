@@ -194,7 +194,7 @@ var textTransformation = function(f, defaultOptions) {
         var trgEnc = options.targetEncoding || srcEnc;
         var text = fs.readFileSync(options.sourcePath, srcEnc);
         var result = f(text, options);
-        fs.writeFileSync(targetFilePath, result, trgEnc);
+        fs.writeFileSync(targetFilePath, result || '', trgEnc);
     };
 
     factory.transformFile = function (sourceFilePath, targetFilePath) {
@@ -215,7 +215,7 @@ var textTransformation = function(f, defaultOptions) {
                 cb(e, undefined);
                 return;
             }
-            fs.writeFile(targetFilePath, result, trgEnc, cb);
+            fs.writeFile(targetFilePath, result || '', trgEnc, cb);
         });
     };
 
