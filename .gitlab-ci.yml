@@ -1,27 +1,11 @@
-image: node:12-alpine
+image: node:4-alpine
 
 before_script:
   - yarn install
 
-test (NodeJS 12): &test-definition
+test (NodeJS 4): &test-definition
   stage: test
   script:
     - yarn test
   tags:
     - docker
-
-test (NodeJS 10):
-  image: node:10-alpine
-  <<: *test-definition
-
-test (NodeJS 8):
-  image: node:8-alpine
-  <<: *test-definition
-
-test (NodeJS 6):
-  image: node:6-alpine
-  <<: *test-definition
-
-test (NodeJS 4):
-  image: node:4-alpine
-  <<: *test-definition
