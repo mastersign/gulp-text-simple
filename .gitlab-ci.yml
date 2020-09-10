@@ -1,9 +1,9 @@
-image: node:alpine
+image: node:12-alpine
 
 before_script:
   - yarn install
 
-test (NodeJS latest): &test-definition
+test (NodeJS 12): &test-definition
   stage: test
   script:
     - yarn test
