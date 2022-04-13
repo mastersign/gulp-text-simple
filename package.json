@@ -32,7 +32,7 @@
     "through2": "^3.0.2"
   },
   "devDependencies": {
-    "async": "^2.6.3",
+    "async": "^3.2.2",
     "del": "^3.0.0",
     "event-stream": "3.3.4",
     "mocha": "^5.2.0",
