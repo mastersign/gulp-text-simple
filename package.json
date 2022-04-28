@@ -1,6 +1,6 @@
 {
   "name": "gulp-text-simple",
-  "version": "0.5.5",
+  "version": "0.5.7",
   "description": "simple creation of Gulp transformations for text files",
   "main": "src/index.js",
   "files": [
@@ -32,8 +32,8 @@
     "through2": "^3.0.2"
   },
   "devDependencies": {
-    "del": "^3.0.0",
     "async": "^2.6.4",
+    "del": "^3.0.0",
     "event-stream": "3.3.4",
     "mocha": "^6.2.3",
     "vinyl": "^2.2.0"
