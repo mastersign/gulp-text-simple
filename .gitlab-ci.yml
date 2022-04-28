@@ -10,8 +10,8 @@ test (NodeJS latest): &test-definition
   tags:
     - docker
 
-test (NodeJS 14):
-  image: node:14-alpine
+test (NodeJS 16):
+  image: node:16-alpine
   <<: *test-definition
 
 test (NodeJS 12):
@@ -20,10 +20,6 @@ test (NodeJS 12):
 
 test (NodeJS 10):
   image: node:10-alpine
-  <<: *test-definition
-
-test (NodeJS 8):
-  image: node:8-alpine
   <<: *test-definition
 
 test (NodeJS 6):
