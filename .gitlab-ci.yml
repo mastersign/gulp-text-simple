@@ -21,11 +21,3 @@ test (NodeJS 18):
 test (NodeJS 16):
   image: node:16-alpine
   <<: *test-definition
-
-test (NodeJS 12):
-  image: node:12-alpine
-  <<: *test-definition
-
-test (NodeJS 10):
-  image: node:10-alpine
-  <<: *test-definition
