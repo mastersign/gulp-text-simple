@@ -15,6 +15,9 @@ But if you want to write a custom [Gulp] task for it, you have to deal with buff
 GulpText _simple_ makes it really simple to create first class [Gulp] transformations with a simple API,
 and an extra benefit of helper functions for dealing with files directly.
 
+Minimal NodeJS version is currently version 16.
+For older NodeJS versions use gulp-text-simple v0.5.x.
+
 Features
 --------
 
